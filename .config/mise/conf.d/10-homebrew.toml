@@ -38,7 +38,7 @@ fi
 "brew-cask:keepingyouawake" = { os = "macos" }
 "brew-cask:maccy" = { os = "macos" }
 "brew-cask:monitorcontrol" = { os = "macos" }
-"brew-cask:omnivm" = { os = "macos" }
+"brew-cask:omniwm" = { os = "macos" }
 "brew-cask:pearcleaner" = { os = "macos" }
 "brew-cask:secretive" = { os = "macos" }
 "brew-cask:suspicious-package" = { os = "macos" }
