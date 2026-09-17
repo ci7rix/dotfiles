@@ -41,7 +41,6 @@ fi
 "brew-cask:omniwm" = { os = "macos" }
 "brew-cask:pearcleaner" = { os = "macos" }
 "brew-cask:secretive" = { os = "macos" }
-"brew-cask:suspicious-package" = { os = "macos" }
 "brew-cask:the-unarchiver" = { os = "macos" }
 "brew-cask:transmission" = { os = "macos" }
 "brew-cask:utm" = { os = "macos" }
