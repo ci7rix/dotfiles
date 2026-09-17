@@ -10,7 +10,6 @@ login_shell = "/opt/homebrew/bin/fish"
 [dotfiles]
 "~/.config/fish/config.fish" = {}
 "~/.config/fish/fish_plugins" = {}
-"~/.config/fish/fish_variables" = {}
 "~/.config/ghostty" = {}
 "~/.config/karabiner/karabiner.json" = {}
 "~/.config/omniwm" = {}
