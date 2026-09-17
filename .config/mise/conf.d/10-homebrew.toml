@@ -1,0 +1,47 @@
+[bootstrap.hooks.pre-packages]
+run = '''
+sudo -v
+while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+
+if ! command -v brew >/dev/null 2>&1; then
+  NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+'''
+
+[bootstrap.packages]
+"brew:aria2" = "latest"
+"brew:carapace" = "latest"
+"brew:cormacrelf/tap/dark-notify" = "latest"
+"brew:docker" = "latest"
+"brew:docker-compose" = "latest"
+"brew:fish" = "latest"
+"brew:git" = "latest"
+"brew:helm" = "latest"
+"brew:kind" = "latest"
+"brew:kubernetes-cli" = "latest"
+"brew:nmap" = "latest"
+"brew:picocom" = "latest"
+"brew:starship" = "latest"
+"brew:tmux" = "latest"
+"brew:tree" = "latest"
+"brew:vim" = "latest"
+"brew:wget" = "latest"
+"brew:zoxide" = "latest"
+"brew:zsh" = "latest"
+# macOS-only: GUI apps (Homebrew casks don't exist on Linux)
+"brew-cask:cog-app" = { os = "macos" }
+"brew-cask:cyberduck" = { os = "macos" }
+"brew-cask:firefox" = { os = "macos" }
+"brew-cask:font-monaspace" = { os = "macos" }
+"brew-cask:ghostty" = { os = "macos" }
+"brew-cask:karabiner-elements" = { os = "macos" }
+"brew-cask:keepingyouawake" = { os = "macos" }
+"brew-cask:maccy" = { os = "macos" }
+"brew-cask:monitorcontrol" = { os = "macos" }
+"brew-cask:pearcleaner" = { os = "macos" }
+"brew-cask:secretive" = { os = "macos" }
+"brew-cask:suspicious-package" = { os = "macos" }
+"brew-cask:the-unarchiver" = { os = "macos" }
+"brew-cask:transmission" = { os = "macos" }
+"brew-cask:utm" = { os = "macos" }
+"brew-cask:vlc" = { os = "macos" }

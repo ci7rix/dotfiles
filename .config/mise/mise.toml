@@ -1,0 +1,17 @@
+min_version = "2026.9.0"
+
+[settings]
+# `mise bootstrap`, `[bootstrap.packages]` os-filters and `[bootstrap.macos.defaults]`
+# are all still tagged [experimental] upstream.
+experimental = true
+
+[bootstrap.user]
+login_shell = "/opt/homebrew/bin/fish"
+
+[dotfiles]
+"~/.config/fish/config.fish" = {}
+"~/.config/ghostty" = {}
+"~/.config/omniwm" = {}
+"~/.config/starship" = {}
+"~/.config/tmux" = {}
+"~/.config/vim/vimrc" = {}

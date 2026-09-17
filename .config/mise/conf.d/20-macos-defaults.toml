@@ -1,0 +1,70 @@
+[bootstrap.hooks.pre-defaults]
+run = '''
+if [ "$(uname)" = "Darwin" ]; then
+  sudo -v
+  while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+  ModelName=$(system_profiler SPHardwareDataType | awk -F': ' '/Model Name/{print $2}' | tr -d ' ')
+  SerialNumber=$(system_profiler SPHardwareDataType | awk -F': ' '/Serial Number \(system\)/{print $2}')
+  sudo scutil --set ComputerName "$ModelName-$SerialNumber"
+  sudo scutil --set HostName "$ModelName-$SerialNumber"
+  sudo scutil --set LocalHostName "$ModelName-$SerialNumber"
+fi
+'''
+
+[bootstrap.hooks.post-defaults]
+run = '''
+if [ "$(uname)" = "Darwin" ]; then
+  hidutil property --set '{"UserKeyMapping":[{"HIDKeyboardModifierMappingSrc":0x700000039,"HIDKeyboardModifierMappingDst":0x700000029}]}' &>/dev/null
+  /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:showItemInfo true" ~/Library/Preferences/com.apple.finder.plist
+  /usr/libexec/PlistBuddy -c "Set :FK_StandardViewSettings:IconViewSettings:showItemInfo true" ~/Library/Preferences/com.apple.finder.plist
+  /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:showItemInfo true" ~/Library/Preferences/com.apple.finder.plist
+  /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:arrangeBy kind" ~/Library/Preferences/com.apple.finder.plist
+  /usr/libexec/PlistBuddy -c "Set :FK_StandardViewSettings:IconViewSettings:arrangeBy kind" ~/Library/Preferences/com.apple.finder.plist
+  /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:arrangeBy kind" ~/Library/Preferences/com.apple.finder.plist
+fi
+'''
+
+[bootstrap.macos.defaults."com.apple.desktopservices"]
+DSDontWriteNetworkStores = true
+DSDontWriteUSBStores = true
+
+[bootstrap.macos.defaults."com.apple.dock"]
+tilesize = 48
+autohide = true
+"autohide-delay" = 0.0
+"autohide-time-modifier" = 0.0
+"show-recents" = false
+"expose-group-apps" = true
+
+[bootstrap.macos.defaults."com.apple.screencapture"]
+location = "~/Pictures/Screenshots"
+
+[bootstrap.macos.defaults."com.apple.finder"]
+QuitMenuItem = true
+AppleShowAllExtensions = true
+ShowPathbar = true
+FXPreferredViewStyle = "clmv"
+"_FXSortFoldersFirst" = true
+FXDefaultSearchScope = "SCcf"
+FXRemoveOldTrashItems = true
+FXEnableExtensionChangeWarning = false
+"_FXEnableColumnAutoSizing" = true
+ShowStatusBar = true
+"_FXSortFoldersFirstOnDesktop" = true
+ShowHardDrivesOnDesktop = true
+ShowExternalHardDrivesOnDesktop = true
+ShowRemovableMediaOnDesktop = true
+ShowMountedServersOnDesktop = true
+
+[bootstrap.macos.defaults."NSGlobalDomain"]
+NSDocumentSaveNewDocumentsToCloud = false
+NSToolbarTitleViewRolloverDelay = 0.0
+ApplePressAndHoldEnabled = false
+AppleKeyboardUIMode = 2
+
+[bootstrap.macos.defaults."com.apple.menuextra.clock"]
+DateFormat = "\"EEE d MMM HH:mm:ss\""
+
+[bootstrap.macos.defaults."com.apple.TextEdit"]
+RichText = 0
+SmartQuotes = false
