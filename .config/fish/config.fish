@@ -1,13 +1,11 @@
-# Homebrew — doit être en premier, avant tout ce qui en dépend
-if command -v brew >/dev/null 2>&1
-    eval (brew shellenv)
-else if test -x /opt/homebrew/bin/brew
-    eval (/opt/homebrew/bin/brew shellenv)
-else
-    echo "[WARN] Homebrew not found" >&2
+# Install fisher
+if not functions -q fisher
+    curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source
+    fisher install jorgebucaran/fisher
+    fisher update
 end
 
-# Homebrew — doit être en premier, avant tout ce qui en dépend
+# Homebrew
 if command -v brew >/dev/null 2>&1
     eval (brew shellenv)
 else if test -x /opt/homebrew/bin/brew
