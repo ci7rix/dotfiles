@@ -16,7 +16,7 @@ font-family = "Monaspace Neon Var"
 font-thicken = true
 font-thicken-strength = 192
 
-theme = "Rose Pine"
+theme = dark:Rose Pine,light:Rose Pine Dawn
 cursor-style = block
 
 copy-on-select = clipboard

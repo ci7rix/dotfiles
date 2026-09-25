@@ -14,6 +14,9 @@ else
     echo "[WARN] Homebrew not found" >&2
 end
 
+# Path
+fish_add_path ~/.local/bin
+
 # XDG
 set -gx XDG_CONFIG_HOME "$HOME/.config"
 set -gx XDG_DATA_HOME "$XDG_CONFIG_HOME/local/share"

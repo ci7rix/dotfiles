@@ -15,12 +15,6 @@ fi
 run = '''
 if [ "$(uname)" = "Darwin" ]; then
   hidutil property --set '{"UserKeyMapping":[{"HIDKeyboardModifierMappingSrc":0x700000039,"HIDKeyboardModifierMappingDst":0x700000029}]}' &>/dev/null
-  /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:showItemInfo true" ~/Library/Preferences/com.apple.finder.plist
-  /usr/libexec/PlistBuddy -c "Set :FK_StandardViewSettings:IconViewSettings:showItemInfo true" ~/Library/Preferences/com.apple.finder.plist
-  /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:showItemInfo true" ~/Library/Preferences/com.apple.finder.plist
-  /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:arrangeBy kind" ~/Library/Preferences/com.apple.finder.plist
-  /usr/libexec/PlistBuddy -c "Set :FK_StandardViewSettings:IconViewSettings:arrangeBy kind" ~/Library/Preferences/com.apple.finder.plist
-  /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:arrangeBy kind" ~/Library/Preferences/com.apple.finder.plist
 fi
 '''
 
@@ -55,12 +49,51 @@ ShowHardDrivesOnDesktop = true
 ShowExternalHardDrivesOnDesktop = true
 ShowRemovableMediaOnDesktop = true
 ShowMountedServersOnDesktop = true
+CreateDesktop = true
+
+[[bootstrap.macos.defaults_entries]]
+domain = "com.apple.finder"
+key = "DesktopViewSettings"
+path = ["IconViewSettings", "showItemInfo"]
+value = true
+
+[[bootstrap.macos.defaults_entries]]
+domain = "com.apple.finder"
+key = "FK_StandardViewSettings"
+path = ["IconViewSettings", "showItemInfo"]
+value = true
+
+[[bootstrap.macos.defaults_entries]]
+domain = "com.apple.finder"
+key = "StandardViewSettings"
+path = ["IconViewSettings", "showItemInfo"]
+value = true
+
+[[bootstrap.macos.defaults_entries]]
+domain = "com.apple.finder"
+key = "DesktopViewSettings"
+path = ["IconViewSettings", "arrangeBy"]
+value = "kind"
+
+[[bootstrap.macos.defaults_entries]]
+domain = "com.apple.finder"
+key = "FK_StandardViewSettings"
+path = ["IconViewSettings", "arrangeBy"]
+value = "kind"
+
+[[bootstrap.macos.defaults_entries]]
+domain = "com.apple.finder"
+key = "StandardViewSettings"
+path = ["IconViewSettings", "arrangeBy"]
+value = "kind"
 
 [bootstrap.macos.defaults."NSGlobalDomain"]
 NSDocumentSaveNewDocumentsToCloud = false
 NSToolbarTitleViewRolloverDelay = 0.0
 ApplePressAndHoldEnabled = false
 AppleKeyboardUIMode = 2
+InitialKeyRepeat = 12
+KeyRepeat = 2
 
 [bootstrap.macos.defaults."com.apple.menuextra.clock"]
 DateFormat = "\"EEE d MMM HH:mm:ss\""

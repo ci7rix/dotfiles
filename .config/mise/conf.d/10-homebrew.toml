@@ -20,6 +20,7 @@ fi
 "brew:kind" = "latest"
 "brew:kubernetes-cli" = "latest"
 "brew:nmap" = "latest"
+"brew-cask:omniwm" = { os = "macos" } 
 "brew:picocom" = "latest"
 "brew:starship" = "latest"
 "brew:tmux" = "latest"
@@ -38,7 +39,6 @@ fi
 "brew-cask:keepingyouawake" = { os = "macos" }
 "brew-cask:maccy" = { os = "macos" }
 "brew-cask:monitorcontrol" = { os = "macos" }
-"brew-cask:omniwm" = { os = "macos" }
 "brew-cask:pearcleaner" = { os = "macos" }
 "brew-cask:secretive" = { os = "macos" }
 "brew-cask:the-unarchiver" = { os = "macos" }
