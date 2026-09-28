@@ -1,5 +1,5 @@
 [settings]
-dotfiles.root = "~/.dotfiles"
+dotfiles.root = "~/.local/share/mise/bootstrap-rep"
 # `mise bootstrap`, `[bootstrap.packages]` os-filters and `[bootstrap.macos.defaults]`
 # are all still tagged [experimental] upstream.
 experimental = true
