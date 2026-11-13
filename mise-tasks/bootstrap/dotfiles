@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+#MISE description="Link the dotfiles only"
+set -euo pipefail
+# Run from HOME so only the global config is used: inside the repo, its
+# .config/mise/conf.d would also load as a project config (hooks twice).
+cd "$HOME"
+exec mise bootstrap --only dotfiles "$@"
