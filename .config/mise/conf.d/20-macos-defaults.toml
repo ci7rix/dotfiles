@@ -23,8 +23,8 @@ if [ "$(uname)" = "Darwin" ]; then
   if [ "$(cat "$state" 2>/dev/null)" != "$sum" ]; then
     # per-folder view settings (.DS_Store) override the Finder defaults: drop them
     find "$HOME/Desktop" "$HOME/Documents" "$HOME/Downloads" -name .DS_Store -delete 2>/dev/null || true
-    # Finder, the Dock and the menu bar keep their preferences in memory: restart them
-    killall Finder Dock SystemUIServer 2>/dev/null || true
+    # Finder, the Dock, the menu bar and the desktop keep their preferences in memory: restart them
+    killall Finder Dock SystemUIServer WindowManager 2>/dev/null || true
     # trackpad and keyboard settings: make macOS reload them without a logout
     /System/Library/PrivateFrameworks/SystemAdministration.framework/Resources/activateSettings -u 2>/dev/null || true
     mkdir -p "$(dirname "$state")" && echo "$sum" > "$state"
@@ -121,6 +121,13 @@ KeyRepeat = 2
 
 [bootstrap.macos.defaults."com.apple.menuextra.clock"]
 DateFormat = "EEE d MMM HH:mm:ss"
+
+# No widgets on the desktop or in Stage Manager, and clicking the wallpaper
+# does not move the windows away to show them
+[bootstrap.macos.defaults."com.apple.WindowManager"]
+StandardHideWidgets = true
+StageManagerHideWidgets = true
+EnableStandardClickToShowDesktop = false
 
 [bootstrap.macos.defaults."com.apple.TextEdit"]
 RichText = 0
