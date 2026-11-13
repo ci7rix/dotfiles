@@ -10,6 +10,10 @@ OfferToSaveLogins = false
 AutofillAddressEnabled = false
 AutofillCreditCardEnabled = false
 
+# Minimal interface: no bookmarks toolbar, no built-in VPN
+DisplayBookmarksToolbar = "never"
+IPProtectionAvailable = false
+
 # No AI feature at all (chatbot, tab groups, link previews, translations...).
 # To keep page translation: add  Translations = { Value = "available" }
 [bootstrap.macos.defaults."org.mozilla.firefox".AIControls]
