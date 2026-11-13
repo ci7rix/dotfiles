@@ -1,18 +1,19 @@
 [settings]
-dotfiles.root = "~/.local/share/mise/bootstrap-rep"
+dotfiles.root = "~/.local/share/mise/bootstrap-repo"
 # `mise bootstrap`, `[bootstrap.packages]` os-filters and `[bootstrap.macos.defaults]`
 # are all still tagged [experimental] upstream.
 experimental = true
 
 [bootstrap.user]
-login_shell = "/opt/homebrew/bin/fish"
+login_shell = "fish"
 
 [dotfiles]
 "~/.config/fish/config.fish" = {}
 "~/.config/fish/fish_plugins" = {}
+"~/.config/fish/functions/k.fish" = {}
 "~/.config/ghostty" = {}
-"~/.config/karabiner/karabiner.json" = {}
+"~/.config/karabiner" = {}
 "~/.config/omniwm" = {}
 "~/.config/starship" = {}
 "~/.config/tmux" = {}
-"~/.config/vim/vimrc" = {}
+"~/.config/nvim" = {}

@@ -1,7 +1,7 @@
 [bootstrap.hooks.pre-packages]
 run = '''
 sudo -v
-while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+while true; do sudo -n true; sleep 60; kill -0 "$PPID" || exit; done >/dev/null 2>&1 &
 
 if ! command -v brew >/dev/null 2>&1; then
   NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -20,12 +20,12 @@ fi
 "brew:kind" = "latest"
 "brew:kubernetes-cli" = "latest"
 "brew:nmap" = "latest"
-"brew-cask:omniwm" = { os = "macos" } 
+"brew-cask:omniwm" = { os = "macos" }
 "brew:picocom" = "latest"
 "brew:starship" = "latest"
 "brew:tmux" = "latest"
 "brew:tree" = "latest"
-"brew:vim" = "latest"
+"brew:neovim" = "latest"
 "brew:wget" = "latest"
 "brew:zoxide" = "latest"
 "brew:zsh" = "latest"

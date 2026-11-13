@@ -2,7 +2,6 @@
 run = '''
 if [ "$(uname)" = "Darwin" ]; then
   sudo -v
-  while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
   ModelName=$(system_profiler SPHardwareDataType | awk -F': ' '/Model Name/{print $2}' | tr -d ' ')
   SerialNumber=$(system_profiler SPHardwareDataType | awk -F': ' '/Serial Number \(system\)/{print $2}')
   sudo scutil --set ComputerName "$ModelName-$SerialNumber"
@@ -11,10 +10,19 @@ if [ "$(uname)" = "Darwin" ]; then
 fi
 '''
 
+# Screenshot folder: written here because $HOME is expanded by the shell,
+# which is not guaranteed for "~" in [bootstrap.macos.defaults].
 [bootstrap.hooks.post-defaults]
 run = '''
 if [ "$(uname)" = "Darwin" ]; then
-  hidutil property --set '{"UserKeyMapping":[{"HIDKeyboardModifierMappingSrc":0x700000039,"HIDKeyboardModifierMappingDst":0x700000029}]}' &>/dev/null
+  mkdir -p "$HOME/Pictures/Screenshots"
+  defaults write com.apple.screencapture location -string "$HOME/Pictures/Screenshots"
+  # Per-folder view settings (.DS_Store) override the Finder defaults:
+  # drop them so every folder uses list view, grouped by kind, sorted by name.
+  find "$HOME/Desktop" "$HOME/Documents" "$HOME/Downloads" -name .DS_Store -delete 2>/dev/null || true
+  # Finder, the Dock and the menu bar cache their preferences and overwrite them
+  # when they quit: restart them so the new defaults are actually used.
+  killall Finder Dock SystemUIServer 2>/dev/null || true
 fi
 '''
 
@@ -30,14 +38,12 @@ autohide = true
 "show-recents" = false
 "expose-group-apps" = true
 
-[bootstrap.macos.defaults."com.apple.screencapture"]
-location = "~/Pictures/Screenshots"
-
 [bootstrap.macos.defaults."com.apple.finder"]
 QuitMenuItem = true
 AppleShowAllExtensions = true
 ShowPathbar = true
-FXPreferredViewStyle = "clmv"
+FXPreferredViewStyle = "Nlsv"
+FXPreferredGroupBy = "Kind"
 "_FXSortFoldersFirst" = true
 FXDefaultSearchScope = "SCcf"
 FXRemoveOldTrashItems = true
@@ -96,7 +102,7 @@ InitialKeyRepeat = 12
 KeyRepeat = 2
 
 [bootstrap.macos.defaults."com.apple.menuextra.clock"]
-DateFormat = "\"EEE d MMM HH:mm:ss\""
+DateFormat = "EEE d MMM HH:mm:ss"
 
 [bootstrap.macos.defaults."com.apple.TextEdit"]
 RichText = 0
