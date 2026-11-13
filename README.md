@@ -37,6 +37,11 @@ Dans le repo, `mise trust` une fois, puis `mise run` pour choisir dans la liste.
 `apply` et `reset` acceptent `--dry-run` pour voir avant d'agir.
 Un fichier qui occupe la place d'un dotfile n'est jamais supprimé : il est déplacé dans `~/.local/state/dotfiles/backup/<date>/`.
 
+## Raccourcis
+
+Dans tmux, `Ctrl+Espace` puis `Espace` affiche les raccourcis principaux, `Ctrl+Espace` puis `?` les liste tous.
+Sur un clavier suisse romand, les caractères faits avec Option (`[ ] { } | \ #`) se tapent avec Option droite : Option gauche + chiffre est pris par OmniWM.
+
 ## Ajouter quelque chose
 
 Une seule façon de faire par type, puis `mise run apply` :
