@@ -111,6 +111,7 @@ AppleShowAllExtensions = true
 ShowPathbar = true
 FXPreferredViewStyle = "Nlsv"
 FXPreferredGroupBy = "Kind"
+NewWindowTarget = "PfHm"   # new windows open the home folder
 "_FXSortFoldersFirst" = true
 FXDefaultSearchScope = "SCcf"
 FXRemoveOldTrashItems = true
