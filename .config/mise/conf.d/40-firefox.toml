@@ -1,0 +1,30 @@
+# Firefox, set up through its policies: they are read from the preferences of
+# this user (domain org.mozilla.firefox). Restart Firefox after `mise run apply`,
+# then about:policies shows what is active and any error.
+[bootstrap.macos.defaults."org.mozilla.firefox"]
+EnterprisePoliciesEnabled = true   # without it Firefox ignores everything below
+
+# Passwords and forms: only the password manager extension, never Firefox itself
+PasswordManagerEnabled = false
+OfferToSaveLogins = false
+AutofillAddressEnabled = false
+AutofillCreditCardEnabled = false
+
+# Extensions, one per line. The ID is in about:support > Add-ons.
+# normal_installed: installed automatically, can still be disabled in Firefox.
+[bootstrap.macos.defaults."org.mozilla.firefox".ExtensionSettings]
+"uBlock0@raymondhill.net"                = { installation_mode = "normal_installed" }   # uBlock Origin
+"sponsorBlocker@ajay.app"                = { installation_mode = "normal_installed" }   # SponsorBlock
+"{446900e4-71c2-419f-a6a7-df9c091e268b}" = { installation_mode = "normal_installed" }   # Bitwarden
+"{762f9885-5a13-4abd-9c77-433dcd38b8fd}" = { installation_mode = "normal_installed" }   # Return YouTube Dislike
+"{f0bda7ce-0cda-42dc-9ea8-126b20fed280}" = { installation_mode = "normal_installed" }   # Hister
+"firefox-extension@shodan.io"            = { installation_mode = "normal_installed" }   # Shodan
+"FirefoxColor@mozilla.com"               = { installation_mode = "normal_installed" }   # Firefox Color
+
+# Layout, as defaults: still changeable in Firefox, and what a new profile starts with.
+# To change it: arrange the toolbars in Firefox, then copy the value of
+# browser.uiCustomization.state from about:config between the single quotes.
+[bootstrap.macos.defaults."org.mozilla.firefox".Preferences]
+"sidebar.revamp"                = { Status = "default", Value = true }
+"sidebar.verticalTabs"          = { Status = "default", Value = true }
+"browser.uiCustomization.state" = { Status = "default", Value = '{"placements":{"widget-overflow-fixed-list":["fxa-toolbar-menu-button"],"unified-extensions-area":["_762f9885-5a13-4abd-9c77-433dcd38b8fd_-browser-action","firefox-extension_shodan_io-browser-action","firefoxcolor_mozilla_com-browser-action","_f0bda7ce-0cda-42dc-9ea8-126b20fed280_-browser-action"],"nav-bar":["sidebar-button","back-button","forward-button","stop-reload-button","vertical-spacer","urlbar-container","downloads-button","unified-extensions-button","sponsorblocker_ajay_app-browser-action","ublock0_raymondhill_net-browser-action","_446900e4-71c2-419f-a6a7-df9c091e268b_-browser-action","alltabs-button","reset-pbm-toolbar-button"],"TabsToolbar":[],"vertical-tabs":["tabbrowser-tabs"],"PersonalToolbar":["personal-bookmarks"]},"seen":["developer-button","screenshot-button","_762f9885-5a13-4abd-9c77-433dcd38b8fd_-browser-action","sponsorblocker_ajay_app-browser-action","firefox-extension_shodan_io-browser-action","_446900e4-71c2-419f-a6a7-df9c091e268b_-browser-action","ublock0_raymondhill_net-browser-action","firefoxcolor_mozilla_com-browser-action","reset-pbm-toolbar-button","ipprotection-button","_f0bda7ce-0cda-42dc-9ea8-126b20fed280_-browser-action"],"dirtyAreaCache":["nav-bar","vertical-tabs","unified-extensions-area","widget-overflow-fixed-list","TabsToolbar","PersonalToolbar"],"currentVersion":28,"newElementCount":5}' }
