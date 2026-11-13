@@ -28,7 +28,12 @@ Highlights = false
 Stories = false
 SponsoredStories = false
 Weather = false
-Widgets = { Enabled = false }
+Locked = true   # enforced: Firefox cannot switch a section back on
+
+# Every widget is also blocked by name: blocked widgets are always locked
+[bootstrap.macos.defaults."org.mozilla.firefox".FirefoxHome.Widgets]
+Enabled = false
+Blocked = ["clocks", "crossword", "focusTimer", "lists", "pictureOfTheDay", "privacy", "recentSearches", "sportsWidget", "stocks", "weather"]
 
 # No recommendations, tips or welcome pages from Firefox
 [bootstrap.macos.defaults."org.mozilla.firefox".UserMessaging]
