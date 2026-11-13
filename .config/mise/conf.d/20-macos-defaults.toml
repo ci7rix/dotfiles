@@ -17,6 +17,26 @@ if [ "$(uname)" = "Darwin" ]; then
   # Screenshot folder: written here so that $HOME is expanded by the shell
   mkdir -p "$HOME/Pictures/Screenshots"
   defaults write com.apple.screencapture location -string "$HOME/Pictures/Screenshots"
+  # Every folder in the Dock shown as a folder, opening as a grid.
+  # The Dock keeps them in a list that defaults cannot edit item by item.
+  plist="$HOME/Library/Preferences/com.apple.dock.plist"
+  pb=/usr/libexec/PlistBuddy
+  i=0; dock_changed=0
+  while "$pb" -c "Print :persistent-others:$i" "$plist" >/dev/null 2>&1; do
+    for kv in displayas=1 showas=2; do
+      k="${kv%%=*}"; v="${kv#*=}"
+      if [ "$("$pb" -c "Print :persistent-others:$i:tile-data:$k" "$plist" 2>/dev/null)" != "$v" ]; then
+        "$pb" -c "Delete :persistent-others:$i:tile-data:$k" "$plist" 2>/dev/null || true
+        "$pb" -c "Add :persistent-others:$i:tile-data:$k integer $v" "$plist"
+        dock_changed=1
+      fi
+    done
+    i=$((i + 1))
+  done
+  if [ "$dock_changed" = 1 ]; then
+    killall cfprefsd 2>/dev/null || true
+    killall Dock 2>/dev/null || true
+  fi
   # Only when this file has changed since the last run:
   state="$HOME/.local/state/dotfiles/macos-defaults.sha"
   sum=$(shasum "$HOME/.config/mise/conf.d/20-macos-defaults.toml" | cut -d' ' -f1)
@@ -44,6 +64,7 @@ apps = [
 # com.apple.mouse.tapBehavior, for this user and for this Mac (see below).
 [bootstrap.macos.trackpad]
 tap_to_click = true
+three_finger_drag = true
 
 [[bootstrap.macos.defaults_entries]]
 domain = "NSGlobalDomain"
@@ -163,7 +184,18 @@ value = "kind"
 
 [bootstrap.macos.defaults."NSGlobalDomain"]
 "com.apple.mouse.tapBehavior" = 1
-NSDocumentSaveNewDocumentsToCloud = false
+NSDocumentSaveNewDocumentsToCloud = false   # save on this Mac, never to iCloud by default
+# Save and print dialogs open expanded
+NSNavPanelExpandedStateForSaveMode = true
+NSNavPanelExpandedStateForSaveMode2 = true
+PMPrintingExpandedStateForPrint = true
+PMPrintingExpandedStateForPrint2 = true
+# Text stays as typed: no smart quotes or dashes, no autocorrect, no auto capital, no period on double space
+NSAutomaticQuoteSubstitutionEnabled = false
+NSAutomaticDashSubstitutionEnabled = false
+NSAutomaticSpellingCorrectionEnabled = false
+NSAutomaticCapitalizationEnabled = false
+NSAutomaticPeriodSubstitutionEnabled = false
 NSToolbarTitleViewRolloverDelay = 0.0
 ApplePressAndHoldEnabled = false
 AppleKeyboardUIMode = 2
@@ -191,5 +223,6 @@ VoiceTriggerUserEnabled = false
 LockscreenEnabled = false
 
 [bootstrap.macos.defaults."com.apple.TextEdit"]
+NSShowAppCentricOpenPanelInsteadOfUntitledFile = false   # opens on a blank page
 RichText = 0
 SmartQuotes = false
