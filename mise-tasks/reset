@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+#MISE description="Start the dotfiles afresh: relink them, reinstall the fish and Neovim plugins, restart tmux"
+#USAGE flag "-n --dry-run" help="Show what would be done, change nothing"
+#USAGE flag "-y --yes" help="Restart the tmux server without asking"
+#
+# Only touches what this repo manages: the rest of ~/.config is left alone.
+set -uo pipefail
+. "$(dirname "$0")/.lib.sh"
+
+step "Files in the way of a dotfile"
+set_aside_conflicts
+
+step "Neovim plugins (reinstalled from nvim-pack-lock.json at next launch)"
+plugins="$HOME/.local/share/nvim/site/pack/core"
+if [ -e "$plugins" ]; then set_aside "$plugins"; else note "none"; fi
+
+try "Link the dotfiles" run mise_global bootstrap --only dotfiles --yes
+try "fish plugins"      run fish -c 'fisher update'
+
+# Last step: the tmux server keeps the old config until it restarts,
+# and restarting it closes this terminal too
+if tmux ls >/dev/null 2>&1; then
+  step "tmux server"
+  answer="y"
+  if [ "${usage_yes:-false}" != "true" ] && [ "$DRY_RUN" != "true" ]; then
+    read -r -p "    Restart it now? This closes every tmux session. [y/N] " answer </dev/tty || answer="n"
+  fi
+  case "$answer" in
+    [yY]*) report; run tmux kill-server ;;
+    *)     note "Kept. Run 'tmux kill-server' when convenient."; report ;;
+  esac
+else
+  report
+fi

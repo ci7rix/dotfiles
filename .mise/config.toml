@@ -1,0 +1,4 @@
+# Repo-only settings (not part of the global config).
+# The tasks here manage the machine: never install tools before running them.
+[settings]
+task.run_auto_install = false

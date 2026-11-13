@@ -1,70 +1,42 @@
-# Install fisher, then the plugins listed in fish_plugins
-if status is-interactive; and not functions -q fisher
-    curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source
-    and fisher update
-end
-
-# Homebrew
-if command -v brew >/dev/null 2>&1
-    eval (brew shellenv)
-else if test -x /opt/homebrew/bin/brew
-    eval (/opt/homebrew/bin/brew shellenv)
-else
-    echo "[WARN] Homebrew not found" >&2
-end
-
-# Path
-fish_add_path ~/.local/bin
-
-# XDG
+# --- Environment -------------------------------------------------------------
 set -gx XDG_CONFIG_HOME "$HOME/.config"
 set -gx XDG_DATA_HOME "$HOME/.local/share"
 set -gx XDG_CACHE_HOME "$HOME/.cache"
-
-# Locale
-set -gx LC_ALL en_US.UTF-8
-
-# Editor
+set -gx LANG en_US.UTF-8
 set -gx EDITOR nvim
 set -gx VISUAL nvim
+set -gx STARSHIP_CONFIG "$XDG_CONFIG_HOME/starship/starship.toml"
 
-# Mise
-if command -v mise >/dev/null 2>&1
-    mise activate fish | source
-else
-    echo "[WARN] Mise not found" >&2
+# Keys created by `mise run setup`: sops age key, SSH key in the Secure Enclave (macOS 26+)
+set -gx SOPS_AGE_KEY_FILE "$XDG_CONFIG_HOME/sops/age/keys.txt"
+test -e /usr/lib/ssh-keychain.dylib; and set -gx SSH_SK_PROVIDER /usr/lib/ssh-keychain.dylib
+
+# --- PATH --------------------------------------------------------------------
+test -x /opt/homebrew/bin/brew; and /opt/homebrew/bin/brew shellenv fish | source
+fish_add_path -g ~/.local/bin
+command -q mise; and mise activate fish | source
+
+# --- Interactive shells only -------------------------------------------------
+status is-interactive; or return
+
+# Plugins: fisher installs itself once, then what fish_plugins lists
+if not functions -q fisher
+    curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source
+    and fisher update
 end
+fish_config theme choose "Rosé Pine Auto"
 
-# Zoxide
-if command -v zoxide >/dev/null 2>&1
-    zoxide init fish | source
-else
-    echo "[WARN] Zoxide not found" >&2
-end
+# Prompt, smarter cd, completions
+command -q starship; and starship init fish | source
+command -q zoxide; and zoxide init fish | source
+command -q carapace; and carapace _carapace fish | source
 
-# Carapace
-if command -v carapace >/dev/null 2>&1
-    carapace _carapace fish | source
-else
-    echo "[WARN] Carapace not found" >&2
-end
+# Aliases: all of them here, one per line
+alias k kubectl
+alias vi nvim
+alias vim nvim
 
-# Starship
-set -gx STARSHIP_CONFIG "$HOME/.config/starship/starship.toml"
-if command -v starship >/dev/null 2>&1
-    starship init fish | source
-else
-    echo "[WARN] Starship not found" >&2
-end
-
-if status is-interactive
-    fish_config theme choose "Rosé Pine Auto"
-
-    # Neovim everywhere, whatever is typed
-    alias vi nvim
-    alias vim nvim
-
-    if not set -q TMUX; and command -v tmux >/dev/null 2>&1
-        exec tmux new-session -A -D -s main
-    end
+# One tmux session: created by the first terminal, taken over by the next ones
+if not set -q TMUX; and command -q tmux
+    exec tmux new-session -A -D -s main
 end

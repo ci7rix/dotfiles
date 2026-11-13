@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-#MISE description="Pull the bootstrap checkout and apply the new commit"
-set -euo pipefail
-# Run from HOME so only the global config is used: inside the repo, its
-# .config/mise/conf.d would also load as a project config (hooks twice).
-cd "$HOME"
-exec mise bootstrap --update "$@"

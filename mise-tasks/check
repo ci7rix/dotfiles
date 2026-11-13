@@ -1,52 +1,53 @@
 #!/usr/bin/env bash
-#MISE description="Check the dotfiles in a throwaway HOME: mise config, deployed links, config syntax"
+#MISE description="Test the config in a throwaway HOME: mise config, dotfile links, syntax of every file (installs nothing)"
 #USAGE flag "-k --keep" help="Keep the temporary HOME for inspection"
 #USAGE flag "-v --verbose" help="Show the output of passing checks too"
 #
-# Nothing is installed and your real HOME is never touched:
-# mise deploys the [dotfiles] entries into a temporary HOME whose
-# bootstrap checkout is a link to this working copy (uncommitted changes included).
-
+# Your real HOME is never touched. The temporary HOME has the same layout as
+# after bootstrap.sh, with this working copy (uncommitted changes included).
 set -uo pipefail
+. "$(dirname "$0")/.lib.sh"
 
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
-MISE_CONFIG="$REPO_ROOT/.config/mise/mise.toml"
-EXPECTED_ROOT="~/.local/share/mise/bootstrap-repo"   # where `mise bootstrap --from` clones
 KEEP="${usage_keep:-false}"
 VERBOSE="${usage_verbose:-false}"
+PATH="$PATH:/Applications/Ghostty.app/Contents/MacOS"
+command -v mise >/dev/null || die "mise not found"
 
-MISE_BIN="$(command -v mise)" || { echo "mise not found in PATH" >&2; exit 1; }
+# "~/Developer/github.com/ci7rix/dotfiles"
+ROOT="$(sed -n 's/^dotfiles\.root *= *"\([^"]*\)".*/\1/p' "$MISE_CONFIG")"
+[ -n "$ROOT" ] || die "dotfiles.root not found in $MISE_CONFIG"
 
-SANDBOX="$(mktemp -d "${TMPDIR:-/tmp}/dotfiles-check.XXXXXX")"
-SANDBOX="$(cd "$SANDBOX" && pwd -P)"
-LOG_DIR="$SANDBOX/.check-logs"
-mkdir -p "$LOG_DIR" "$SANDBOX/tmp" "$SANDBOX/.config" "$SANDBOX/.local/share/mise"
+SANDBOX="$(cd "$(mktemp -d "${TMPDIR:-/tmp}/dotfiles-check.XXXXXX")" && pwd -P)"
+LOGS="$SANDBOX/.check-logs"
+mkdir -p "$LOGS" "$SANDBOX/tmp" "$SANDBOX/.config" "$(dirname "$SANDBOX/${ROOT#\~/}")"
+ln -s "$REPO_ROOT" "$SANDBOX/${ROOT#\~/}"
+ln -s "$REPO_ROOT/.config/mise" "$SANDBOX/.config/mise"
 
 cleanup() {
-  if [ "$KEEP" = "true" ]; then
-    echo "Sandbox kept: $SANDBOX"
-  else
-    rm -rf "$SANDBOX"   # removes the links, never what they point to
-  fi
+  # rm removes the links, never what they point to
+  if [ "$KEEP" = "true" ]; then echo "Sandbox kept: $SANDBOX"; else rm -rf "$SANDBOX"; fi
 }
 trap cleanup EXIT
 
-# Run a command with HOME and XDG dirs pointing at the sandbox, from inside it
-# (so the repo's own .config/mise/conf.d is not loaded as a project config).
+# Run a command with HOME and the XDG folders inside the sandbox
 in_sandbox() {
   (cd "$SANDBOX" && env -i \
     HOME="$SANDBOX" USER="${USER:-tester}" LOGNAME="${USER:-tester}" \
-    PATH="$PATH" TERM="${TERM:-xterm-256color}" LANG=en_US.UTF-8 \
-    TMPDIR="$SANDBOX/tmp" \
+    PATH="$PATH" TERM="${TERM:-xterm-256color}" LANG=en_US.UTF-8 TMPDIR="$SANDBOX/tmp" \
     XDG_CONFIG_HOME="$SANDBOX/.config" XDG_DATA_HOME="$SANDBOX/.local/share" \
     XDG_CACHE_HOME="$SANDBOX/.cache" XDG_STATE_HOME="$SANDBOX/.local/state" \
     "$@")
 }
 
+# --- Test helpers ---------------------------------------------------------------
 PASS=0 FAIL=0 SKIP=0
+section() { printf '\n\033[1m%s\033[0m\n' "$1"; }
+skip() { printf '  \033[33mSKIP\033[0m %s (%s)\n' "$1" "$2"; SKIP=$((SKIP + 1)); }
+
+# check <label> <command...>
 check() {
-  local label="$1"; shift
-  local log="$LOG_DIR/$(printf '%s' "$label" | tr -c 'A-Za-z0-9' '-').log"
+  local label="$1" log; shift
+  log="$LOGS/$(printf '%s' "$label" | tr -c 'A-Za-z0-9' '-').log"
   if "$@" >"$log" 2>&1; then
     printf '  \033[32mPASS\033[0m %s\n' "$label"; PASS=$((PASS + 1))
     if [ "$VERBOSE" = "true" ]; then sed 's/^/       /' "$log"; fi
@@ -55,107 +56,65 @@ check() {
     tail -n 20 "$log" | sed 's/^/       /'
   fi
 }
-skip() { printf '  \033[33mSKIP\033[0m %s (%s)\n' "$1" "$2"; SKIP=$((SKIP + 1)); }
-section() { printf '\n\033[1m%s\033[0m\n' "$1"; }
 
-# Targets declared in the [dotfiles] table of mise.toml, without the leading "~/"
-dotfile_targets() {
-  awk '/^\[dotfiles\]/ { f = 1; next } /^\[/ { f = 0 }
-       f && /^"~\// { sub(/^"~\//, ""); sub(/".*/, ""); print }' "$MISE_CONFIG"
+# needs <tool> <label> <command...>: check, or skip when the tool is not installed
+needs() {
+  local tool="$1"; shift
+  if command -v "$tool" >/dev/null 2>&1; then check "$@"; else skip "$1" "$tool not installed"; fi
 }
 
-# Same layout as after `mise bootstrap --from <repo>`
-ln -s "$REPO_ROOT" "$SANDBOX/.local/share/mise/bootstrap-repo"
-ln -s "$REPO_ROOT/.config/mise" "$SANDBOX/.config/mise"
-
-echo "Repository: $REPO_ROOT"
-echo "Sandbox:    $SANDBOX"
-
-# --- mise ---------------------------------------------------------------
+# --- mise -----------------------------------------------------------------------
 section "mise"
 
-root_is_expected() {
-  local root
-  root="$(sed -n 's/^dotfiles\.root *= *"\(.*\)"/\1/p' "$MISE_CONFIG")"
-  echo "dotfiles.root = $root (expected $EXPECTED_ROOT)"
-  [ "$root" = "$EXPECTED_ROOT" ]
+same_root() {
+  local dir
+  dir="$(sed -n 's/^REPO_DIR="\$HOME\/\([^"]*\)".*/\1/p' "$REPO_ROOT/bootstrap.sh")"
+  echo "mise.toml: $ROOT, bootstrap.sh: ~/$dir"
+  [ "$ROOT" = "~/$dir" ]
 }
-check "dotfiles.root points to the bootstrap checkout" root_is_expected
-check "mise loads the config" in_sandbox "$MISE_BIN" config ls
-check "mise bootstrap --dry-run" in_sandbox "$MISE_BIN" bootstrap --dry-run
-check "mise bootstrap --only dotfiles" in_sandbox "$MISE_BIN" bootstrap --only dotfiles --yes
+check "dotfiles.root is where bootstrap.sh clones" same_root
+check "mise loads the config"          in_sandbox mise config ls
+check "mise bootstrap --dry-run"       in_sandbox mise bootstrap --dry-run
+check "mise bootstrap --only dotfiles" in_sandbox mise bootstrap --only dotfiles --yes
 
-section "Deployed dotfiles"
-while IFS= read -r target; do
-  check "~/$target" test -e "$SANDBOX/$target"
+section "Dotfiles linked"
+while IFS= read -r t; do
+  # -L too: a link to a tool that is not installed here still counts
+  check "~/$t" bash -c '[ -e "$1" ] || [ -L "$1" ]' _ "$SANDBOX/$t"
 done < <(dotfile_targets)
 
-# --- configs ------------------------------------------------------------
-section "Config syntax"
+# --- Syntax ---------------------------------------------------------------------
+section "Syntax"
 
-check "bootstrap.sh" bash -n "$REPO_ROOT/bootstrap.sh"
-
-if command -v fish >/dev/null 2>&1; then
-  for f in "$SANDBOX/.config/fish/config.fish" "$REPO_ROOT"/.config/fish/functions/*.fish; do
-    check "fish: ${f#"$SANDBOX/"}" fish --no-config -n "$f"
-  done
-else
-  skip "fish" "not installed"
-fi
-
-if command -v tmux >/dev/null 2>&1; then
-  # -n parses the file without running it (no TPM clone, no plugin install)
-  check "tmux: tmux.conf" in_sandbox tmux -L "dotfiles-check-$$" -f /dev/null \
-    start-server \; source-file -n "$SANDBOX/.config/tmux/tmux.conf"
-else
-  skip "tmux" "not installed"
-fi
-
-nvim_check() {
-  # Lua syntax only: loadfile() compiles init.lua without running it,
-  # so no plugin is downloaded
-  local init="$SANDBOX/.config/nvim/init.lua"
+nvim_syntax() {
+  # loadfile() compiles init.lua without running it: no plugin is downloaded
   in_sandbox nvim --clean --headless \
-    -c "lua local ok, err = loadfile([[$init]]) if not ok then io.stderr:write(err .. '\\n') vim.cmd.cquit() end" \
+    -c "lua local ok, err = loadfile([[$REPO_ROOT/.config/nvim/init.lua]]) if not ok then io.stderr:write(err .. '\\n') vim.cmd.cquit() end" \
     -c 'qa!'
 }
-if command -v nvim >/dev/null 2>&1; then
-  check "nvim: init.lua" nvim_check
-else
-  skip "nvim" "not installed"
-fi
 
-starship_check() {
+starship_config() {
   local out
-  out="$(in_sandbox env STARSHIP_CONFIG="$SANDBOX/.config/starship/starship.toml" \
-    starship print-config 2>&1 >/dev/null)"
+  out="$(in_sandbox env STARSHIP_CONFIG="$REPO_ROOT/.config/starship/starship.toml" starship print-config 2>&1 >/dev/null)"
   echo "$out"
   ! grep -qiE 'warn|error' <<<"$out"
 }
-if command -v starship >/dev/null 2>&1; then
-  check "starship: starship.toml" starship_check
-else
-  skip "starship" "not installed"
-fi
 
-GHOSTTY_BIN="$(command -v ghostty || true)"
-[ -z "$GHOSTTY_BIN" ] && [ -x /Applications/Ghostty.app/Contents/MacOS/ghostty ] \
-  && GHOSTTY_BIN=/Applications/Ghostty.app/Contents/MacOS/ghostty
-if [ -n "$GHOSTTY_BIN" ]; then
-  check "ghostty: config" in_sandbox "$GHOSTTY_BIN" +validate-config
-else
-  skip "ghostty" "not installed"
-fi
+for f in "$REPO_ROOT/bootstrap.sh" "$REPO_ROOT/mise-tasks/.lib.sh" "$REPO_ROOT"/mise-tasks/*; do
+  check "bash: ${f#"$REPO_ROOT/"}" bash -n "$f"
+done
+needs fish     "fish: config.fish"         fish --no-config -n "$REPO_ROOT/.config/fish/config.fish"
+# A standard TERM: the sandbox has no Ghostty terminfo, and only the file is under test
+needs tmux     "tmux: tmux.conf"           in_sandbox env TERM=xterm-256color tmux -L "dotfiles-check-$$" -f /dev/null \
+                                             start-server \; source-file -n "$REPO_ROOT/.config/tmux/tmux.conf"
+needs nvim     "nvim: init.lua"            nvim_syntax
+needs starship "starship: starship.toml"   starship_config
+needs ghostty  "ghostty: config"           in_sandbox ghostty +validate-config
+needs python3  "karabiner: karabiner.json" python3 -m json.tool "$REPO_ROOT/.config/karabiner/karabiner.json"
 
-if command -v plutil >/dev/null 2>&1; then
-  check "karabiner: karabiner.json" plutil -lint "$SANDBOX/.config/karabiner/karabiner.json"
-else
-  skip "karabiner" "plutil not available (not macOS)"
-fi
-
-# --- summary ------------------------------------------------------------
+# --- Summary --------------------------------------------------------------------
 printf '\n%d passed, %d failed, %d skipped\n' "$PASS" "$FAIL" "$SKIP"
 if [ "$FAIL" -gt 0 ] && [ "$KEEP" != "true" ]; then
-  echo "Rerun with --keep to inspect the sandbox and the logs in .check-logs/"
+  echo "Run again with --keep to inspect the sandbox and its .check-logs/"
 fi
 [ "$FAIL" -eq 0 ]

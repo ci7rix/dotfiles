@@ -1,0 +1,10 @@
+# Read by git from ~/.config/git/config (XDG location, no ~/.gitconfig needed)
+[user]
+	name = Ci7rix
+	email = 12910735+Ci7rix@users.noreply.github.com
+[init]
+	defaultBranch = main
+[push]
+	autoSetupRemote = true
+[ghq]
+	root = ~/Developer

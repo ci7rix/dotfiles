@@ -1,0 +1,3 @@
+# Tools whose version mise manages
+[tools]
+python = "latest"

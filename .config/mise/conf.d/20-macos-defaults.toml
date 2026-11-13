@@ -1,28 +1,32 @@
+# Machine name = model + serial number. Only changed (and sudo asked) when it differs.
 [bootstrap.hooks.pre-defaults]
 run = '''
 if [ "$(uname)" = "Darwin" ]; then
-  sudo -v
-  ModelName=$(system_profiler SPHardwareDataType | awk -F': ' '/Model Name/{print $2}' | tr -d ' ')
-  SerialNumber=$(system_profiler SPHardwareDataType | awk -F': ' '/Serial Number \(system\)/{print $2}')
-  sudo scutil --set ComputerName "$ModelName-$SerialNumber"
-  sudo scutil --set HostName "$ModelName-$SerialNumber"
-  sudo scutil --set LocalHostName "$ModelName-$SerialNumber"
+  model=$(system_profiler SPHardwareDataType | awk -F': ' '/Model Name/{print $2}' | tr -d ' ')
+  serial=$(system_profiler SPHardwareDataType | awk -F': ' '/Serial Number \(system\)/{print $2}')
+  name="$model-$serial"
+  for key in ComputerName HostName LocalHostName; do
+    [ "$(scutil --get "$key" 2>/dev/null)" = "$name" ] || sudo scutil --set "$key" "$name"
+  done
 fi
 '''
 
-# Screenshot folder: written here because $HOME is expanded by the shell,
-# which is not guaranteed for "~" in [bootstrap.macos.defaults].
 [bootstrap.hooks.post-defaults]
 run = '''
 if [ "$(uname)" = "Darwin" ]; then
+  # Screenshot folder: written here so that $HOME is expanded by the shell
   mkdir -p "$HOME/Pictures/Screenshots"
   defaults write com.apple.screencapture location -string "$HOME/Pictures/Screenshots"
-  # Per-folder view settings (.DS_Store) override the Finder defaults:
-  # drop them so every folder uses list view, grouped by kind, sorted by name.
-  find "$HOME/Desktop" "$HOME/Documents" "$HOME/Downloads" -name .DS_Store -delete 2>/dev/null || true
-  # Finder, the Dock and the menu bar cache their preferences and overwrite them
-  # when they quit: restart them so the new defaults are actually used.
-  killall Finder Dock SystemUIServer 2>/dev/null || true
+  # Only when this file has changed since the last run:
+  state="$HOME/.local/state/dotfiles/macos-defaults.sha"
+  sum=$(shasum "$HOME/.config/mise/conf.d/20-macos-defaults.toml" | cut -d' ' -f1)
+  if [ "$(cat "$state" 2>/dev/null)" != "$sum" ]; then
+    # per-folder view settings (.DS_Store) override the Finder defaults: drop them
+    find "$HOME/Desktop" "$HOME/Documents" "$HOME/Downloads" -name .DS_Store -delete 2>/dev/null || true
+    # Finder, the Dock and the menu bar keep their preferences in memory: restart them
+    killall Finder Dock SystemUIServer 2>/dev/null || true
+    mkdir -p "$(dirname "$state")" && echo "$sum" > "$state"
+  fi
 fi
 '''
 

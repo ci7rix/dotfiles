@@ -1,35 +1,41 @@
+# mise installs the packages below by itself. Homebrew is only added for its
+# own commands (brew uninstall, brew services...), if it is missing.
 [bootstrap.hooks.pre-packages]
 run = '''
-sudo -v
-while true; do sudo -n true; sleep 60; kill -0 "$PPID" || exit; done >/dev/null 2>&1 &
-
-if ! command -v brew >/dev/null 2>&1; then
+if ! command -v brew >/dev/null 2>&1 && [ ! -x /opt/homebrew/bin/brew ]; then
+  sudo -v
   NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
 '''
 
 [bootstrap.packages]
+# Command-line tools
+"brew:age" = "latest"
+"brew:age-plugin-se" = { os = "macos" }
 "brew:aria2" = "latest"
 "brew:carapace" = "latest"
-"brew:cormacrelf/tap/dark-notify" = "latest"
+"brew:colima" = "latest"
 "brew:docker" = "latest"
 "brew:docker-compose" = "latest"
 "brew:fish" = "latest"
+"brew:ghq" = "latest"
 "brew:git" = "latest"
 "brew:helm" = "latest"
 "brew:kind" = "latest"
 "brew:kubernetes-cli" = "latest"
+"brew:neovim" = "latest"
 "brew:nmap" = "latest"
-"brew-cask:omniwm" = { os = "macos" }
+"brew:pam-reattach" = { os = "macos" }
 "brew:picocom" = "latest"
+"brew:rclone" = "latest"
+"brew:sops" = "latest"
 "brew:starship" = "latest"
+"brew:talosctl" = "latest"
 "brew:tmux" = "latest"
 "brew:tree" = "latest"
-"brew:neovim" = "latest"
 "brew:wget" = "latest"
 "brew:zoxide" = "latest"
-"brew:zsh" = "latest"
-# macOS-only: GUI apps (Homebrew casks don't exist on Linux)
+# Apps (casks, macOS only)
 "brew-cask:cog-app" = { os = "macos" }
 "brew-cask:cyberduck" = { os = "macos" }
 "brew-cask:firefox" = { os = "macos" }
@@ -37,11 +43,11 @@ fi
 "brew-cask:ghostty" = { os = "macos" }
 "brew-cask:karabiner-elements" = { os = "macos" }
 "brew-cask:keepingyouawake" = { os = "macos" }
+"brew-cask:keka" = { os = "macos" }
 "brew-cask:maccy" = { os = "macos" }
 "brew-cask:monitorcontrol" = { os = "macos" }
-"brew-cask:pearcleaner" = { os = "macos" }
-"brew-cask:secretive" = { os = "macos" }
-"brew-cask:the-unarchiver" = { os = "macos" }
+"brew-cask:omniwm" = { os = "macos" }
 "brew-cask:transmission" = { os = "macos" }
 "brew-cask:utm" = { os = "macos" }
 "brew-cask:vlc" = { os = "macos" }
+"brew-cask:zed" = { os = "macos" }

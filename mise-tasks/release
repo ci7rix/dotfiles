@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+#MISE description="Mark the current commit as known good: run check, tag it with today's date, push the tag"
+set -euo pipefail
+. "$(dirname "$0")/.lib.sh"
+cd "$REPO_ROOT"
+
+[ -z "$(git status --porcelain)" ] || die "Uncommitted changes: commit first."
+
+existing="$(git tag --points-at HEAD)"
+if [ -n "$existing" ]; then echo "This commit is already tagged: $existing"; exit 0; fi
+
+"$REPO_ROOT/mise-tasks/check"
+
+tag="$(date +%Y-%m-%d)"
+n=2
+while git rev-parse -q --verify "refs/tags/$tag" >/dev/null; do tag="$(date +%Y-%m-%d)-$n"; n=$((n + 1)); done
+
+git tag -a "$tag" -m "Known good state"
+git push origin "$tag"
+echo "Tagged $tag. To come back to it: git checkout $tag, then mise run reset"

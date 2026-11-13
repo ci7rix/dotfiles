@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+#MISE description="Apply the config to this Mac: packages, dotfiles, macOS defaults, login shell, tools"
+#USAGE flag "-n --dry-run" help="Show what would change, change nothing"
+#USAGE flag "--only <parts>" help="Only these parts, comma separated (e.g. dotfiles,defaults)"
+set -euo pipefail
+. "$(dirname "$0")/.lib.sh"
+
+step "Files in the way of a dotfile"
+set_aside_conflicts
+
+step "mise bootstrap"
+args=(--yes)
+if [ "$DRY_RUN" = "true" ]; then
+  args=(--dry-run)
+  # Nothing was moved: let the preview go past the files listed above
+  if [ "$CONFLICTS" -gt 0 ]; then args+=(--force-dotfiles); fi
+fi
+if [ -n "${usage_only:-}" ]; then args+=(--only "$usage_only"); fi
+mise_global bootstrap "${args[@]}"

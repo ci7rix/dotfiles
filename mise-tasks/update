@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+#MISE description="Update everything: pull this repo and apply it, then upgrade packages, tools, fish and Neovim plugins"
+set -uo pipefail
+. "$(dirname "$0")/.lib.sh"
+
+# In a function: bash has read the whole file before git pull can change it
+main() {
+  try "Pull this repo"    git -C "$REPO_ROOT" pull --ff-only
+  try "Apply the config"  "$REPO_ROOT/mise-tasks/apply"
+  try "Homebrew packages" mise_global bootstrap packages upgrade
+  try "mise tools"        mise_global upgrade
+  try "fish plugins"      fish -c 'fisher update'
+  try "Neovim plugins"    nvim --headless "+lua vim.pack.update(nil, { force = true })" +qa
+  report && echo "Commit .config/nvim/nvim-pack-lock.json if it changed."
+}
+main

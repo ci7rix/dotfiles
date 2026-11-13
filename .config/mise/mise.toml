@@ -1,19 +1,21 @@
 [settings]
-dotfiles.root = "~/.local/share/mise/bootstrap-repo"
-# `mise bootstrap`, `[bootstrap.packages]` os-filters and `[bootstrap.macos.defaults]`
-# are all still tagged [experimental] upstream.
-experimental = true
+dotfiles.root = "~/Developer/github.com/ci7rix/dotfiles"   # = REPO_DIR in bootstrap.sh
+experimental = true   # mise bootstrap is still experimental upstream
 
 [bootstrap.user]
 login_shell = "fish"
 
+# Linked from this repo (same path under dotfiles.root)
 [dotfiles]
 "~/.config/fish/config.fish" = {}
 "~/.config/fish/fish_plugins" = {}
-"~/.config/fish/functions/k.fish" = {}
 "~/.config/ghostty" = {}
+"~/.config/git/config" = {}
+"~/.config/git/ignore" = {}
 "~/.config/karabiner" = {}
+"~/.config/nvim" = {}
 "~/.config/omniwm" = {}
 "~/.config/starship" = {}
 "~/.config/tmux" = {}
-"~/.config/nvim" = {}
+# "docker compose" without the hyphen: the Homebrew binary as a docker CLI plugin
+"~/.docker/cli-plugins/docker-compose" = { source = "/opt/homebrew/opt/docker-compose/bin/docker-compose" }

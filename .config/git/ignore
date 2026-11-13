@@ -1,0 +1,3 @@
+# Global ignore, read by git from ~/.config/git/ignore
+.DS_Store
+._*

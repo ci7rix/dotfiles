@@ -1,76 +1,58 @@
 # dotfiles
 
-Configuration de mon Mac, appliquée par [mise](https://mise.jdx.dev) (`mise bootstrap`).
-Objectif : pouvoir réinitialiser le poste à tout moment et retrouver un environnement propre en une commande.
-
-## Contenu
-
-| Élément | Fichiers |
-|---|---|
-| Paquets Homebrew (formules et casks) | `.config/mise/conf.d/10-homebrew.toml` |
-| Réglages macOS (Finder, Dock, clavier, nom de la machine...) | `.config/mise/conf.d/20-macos-defaults.toml` |
-| Liens des dotfiles, shell de connexion | `.config/mise/mise.toml` |
-| fish (fisher, Rosé Pine, fonction `k`) | `.config/fish/` |
-| Ghostty, tmux, Neovim, Starship | `.config/ghostty/`, `.config/tmux/`, `.config/nvim/`, `.config/starship/` |
-| Karabiner, OmniWM | `.config/karabiner/`, `.config/omniwm/` |
-| Tâches mise | `mise-tasks/` |
+Configuration de mon Mac, appliquée par [mise](https://mise.jdx.dev).
+But : réinitialiser le poste à tout moment et retrouver un environnement propre en une commande.
+Tout est idempotent : chaque commande peut être relancée sans rien casser.
 
 ## Nouveau Mac ou Mac réinitialisé
 
-1. Terminer l'assistant de configuration de macOS et ouvrir le Terminal.
-2. Lancer :
+Dans le Terminal, après l'assistant de configuration de macOS :
 
-   ```sh
-   bash -c "$(curl -fsSL https://raw.githubusercontent.com/ci7rix/dotfiles/main/bootstrap.sh)"
-   ```
+```sh
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/ci7rix/dotfiles/main/bootstrap.sh)"
+```
 
-3. Se déconnecter puis se reconnecter (fish devient le shell de connexion).
-4. Suivre la liste [Après l'installation](#après-linstallation).
+Le script installe les Command Line Tools (git) et mise, clone ce repo dans `~/Developer/github.com/ci7rix/dotfiles`, applique tout, puis lance `mise run setup`.
 
-`bootstrap.sh` fait trois choses :
+Ensuite, à la main :
 
-1. installe les Xcode Command Line Tools (dont git) via `softwareupdate`, sans la fenêtre d'installation ; si ça échoue, il ouvre la fenêtre et attend la fin ;
-2. installe mise dans `~/.local/bin` ;
-3. lance `mise bootstrap --from https://github.com/ci7rix/dotfiles --config-dir .config/mise --yes` : le repo est cloné dans `~/.local/share/mise/bootstrap-repo` (le `dotfiles.root` de la config), `~/.config/mise` devient un lien vers son dossier `.config/mise`, puis tout est appliqué.
+1. Se déconnecter et se reconnecter (fish devient le shell de connexion).
+2. Ajouter sur GitHub et sur les serveurs la clé SSH affichée par `setup`.
+3. Ajouter au `.sops.yaml` le destinataire age affiché par `setup`, puis lancer `sops updatekeys` depuis un Mac qui déchiffre déjà (ou avec la clé de secours).
+4. Accepter les autorisations de Karabiner-Elements et d'OmniWM, et les mettre à l'ouverture de session avec Maccy et KeepingYouAwake.
 
-Le mot de passe administrateur est demandé une fois au début.
-Pour un aperçu sans rien appliquer, ajouter les arguments après le script : `bash -c "$(curl ...)" -- --dry-run`.
+## Tâches
 
-## Au quotidien
-
-Une fois dans le repo, `mise trust` (une seule fois), puis `mise run` affiche la liste des tâches :
+Dans le repo, `mise trust` une fois, puis `mise run` pour choisir dans la liste.
 
 | Tâche | Rôle |
 |---|---|
-| `check` | Teste la config dans un HOME temporaire : config mise, liens, syntaxe fish/tmux/Neovim/Starship/Ghostty/Karabiner, `bootstrap.sh` |
-| `bootstrap:dry-run` | Montre ce que le bootstrap changerait |
-| `bootstrap:all` | Applique tout |
-| `bootstrap:status` | Montre ce qui est appliqué et ce qui diffère |
-| `bootstrap:update` | Met à jour le clone et applique le nouveau commit |
-| `bootstrap:dotfiles` | Seulement les liens des dotfiles |
-| `bootstrap:packages` | Seulement les paquets Homebrew |
-| `bootstrap:defaults` | Seulement les réglages macOS, puis relance Finder, le Dock et la barre des menus |
+| `apply` | Applique la config : paquets, dotfiles, réglages macOS, shell, outils. `--only dotfiles,defaults` pour une partie |
+| `update` | Récupère le repo, l'applique, puis met à jour paquets, outils mise, plugins fish et Neovim |
+| `setup` | Ce qui est propre à ce Mac : Touch ID pour `sudo`, clé SSH et clé age dans la Secure Enclave. Garde ce qui existe |
+| `reset` | Repart de zéro pour les dotfiles : liens, plugins fish et Neovim, serveur tmux. Ne touche pas au reste de `~/.config` |
+| `check` | Teste la config dans un HOME temporaire, sans rien installer |
+| `release` | Lance `check`, pose un tag daté sur le commit et le pousse : un état connu bon où revenir |
 
-Les arguments supplémentaires passent à mise : `mise run bootstrap:defaults -- --dry-run`.
+`apply` et `reset` acceptent `--dry-run` pour voir avant d'agir.
+Un fichier qui occupe la place d'un dotfile n'est jamais supprimé : il est déplacé dans `~/.local/state/dotfiles/backup/<date>/`.
 
-## Avant de réinitialiser
+## Ajouter quelque chose
 
-- `mise run check` passe sans erreur.
-- Tout est commité et poussé sur GitHub : le Mac réinitialisé clone `main`.
-- Les données (documents, projets non poussés, exports) sont sauvegardées ailleurs : ce repo ne contient que la configuration.
+Une seule façon de faire par type, puis `mise run apply` :
 
-## Après l'installation
+| Quoi | Où | Comment |
+|---|---|---|
+| Outil en ligne de commande | `.config/mise/conf.d/10-homebrew.toml` | `"brew:nom" = "latest"`, dans l'ordre alphabétique |
+| App | `.config/mise/conf.d/10-homebrew.toml` | `"brew-cask:nom" = { os = "macos" }`, dans l'ordre alphabétique |
+| Outil dont mise gère la version | `.config/mise/conf.d/30-tools.toml` | `nom = "latest"` |
+| Réglage macOS | `.config/mise/conf.d/20-macos-defaults.toml` | Une ligne dans la table de son domaine |
+| Dotfile | `.config/…` dans le repo | Plus une ligne `"~/.config/…" = {}` dans `[dotfiles]` de `.config/mise/mise.toml` |
+| Alias | `.config/fish/config.fish` | `alias nom commande`, dans le bloc des alias |
+| Plugin fish | `.config/fish/fish_plugins` | Une ligne `auteur/plugin`, puis `mise run update` |
+| Réglage propre à un Mac (clé, secret) | `mise-tasks/setup` | Une fonction qui vérifie avant d'agir, appelée par `try` |
+| Tâche | `mise-tasks/nom` | Script bash exécutable qui charge `.lib.sh` |
 
-Ce que le bootstrap ne peut pas faire :
+## Clé de secours sops
 
-- **Git** : nom, e-mail et signature des commits (pas de config git dans ce repo).
-- **Clés SSH** : les clés Secretive vivent dans la Secure Enclave et disparaissent avec la réinitialisation. En créer de nouvelles dans Secretive et les ajouter sur GitHub.
-- **Autorisations macOS** : Karabiner-Elements (extension système, surveillance de l'entrée) et OmniWM (accessibilité) les demandent au premier lancement.
-- **Ouverture à la connexion** : OmniWM, Maccy, KeepingYouAwake.
-- **Apps du Mac App Store** : non gérées ici.
-
-## Notes
-
-- Finder : vue liste, groupée par type ; le hook des réglages macOS supprime les `.DS_Store` du Bureau, de Documents et de Téléchargements pour que tous les dossiers suivent ces réglages.
-- tmux n'utilise aucun plugin : la barre prend les couleurs de la palette de Ghostty et suit donc le thème clair ou sombre en direct.
-- Neovim remplace vim : `vi` et `vim` lancent `nvim`. Le thème Rosé Pine est installé par `vim.pack` (intégré à Neovim 0.12) au premier lancement ; le fichier `.config/nvim/nvim-pack-lock.json` qu'il crée fixe la version du thème et se commite avec le reste.
+Une seule fois : `age-keygen -o backup.txt`, ajouter sa clé publique au `.sops.yaml`, ranger le fichier hors ligne et l'effacer du Mac. Elle sert si tous les Macs sont perdus.

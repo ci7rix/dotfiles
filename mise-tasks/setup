@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+#MISE description="Set up what belongs to this Mac only: Touch ID for sudo, SSH key, sops age key (keeps what exists)"
+#
+# Each step checks first and never replaces anything: safe to run again.
+set -uo pipefail
+. "$(dirname "$0")/.lib.sh"
+
+[ "$(uname)" = "Darwin" ] || { echo "macOS only, nothing to do."; exit 0; }
+
+# Touch ID for sudo, inside tmux too
+touch_id() {
+  local file=/etc/pam.d/sudo_local                      # read by sudo, kept by macOS updates
+  local reattach=/opt/homebrew/lib/pam/pam_reattach.so  # brew:pam-reattach, needed inside tmux
+
+  if [ -e "$file" ]; then
+    if grep -q '^[^#]*pam_tid\.so' "$file"; then note "Already enabled: kept."
+    else note "$file exists without Touch ID: left untouched."; fi
+    return 0
+  fi
+  [ -f "$reattach" ] || { warn "$reattach missing: run 'mise run apply' first."; return 1; }
+  printf '%s\n' \
+    "# Created by the dotfiles (mise run setup)" \
+    "auth       optional       $reattach" \
+    "auth       sufficient     pam_tid.so" | sudo tee "$file" >/dev/null || return 1
+  sudo chown root:wheel "$file" && sudo chmod 0444 "$file"
+  note "Enabled. Try it in a new terminal: sudo -k; sudo true"
+}
+
+# SSH key in the Secure Enclave, unlocked by Touch ID (macOS 26+)
+ssh_key() {
+  local label=ssh provider=/usr/lib/ssh-keychain.dylib key="$HOME/.ssh/id_ecdsa_sk"
+  [ -e "$provider" ] || { warn "$provider missing: needs macOS 26 or later."; return 1; }
+
+  if sc_auth list-ctk-identities 2>/dev/null | awk -v l="$label" '$4 == l { f = 1 } END { exit !f }'; then
+    note "Secure Enclave identity '$label': kept."
+  else
+    sc_auth create-ctk-identity -l "$label" -k p-256-ne -t bio || return 1
+  fi
+
+  if [ -e "$key" ]; then
+    note "$key: kept."
+  else
+    # ssh-keygen writes one handle per key of the enclave (no secret in them)
+    local tmp refs=() f
+    tmp="$(mktemp -d)"
+    (cd "$tmp" && ssh-keygen -w "$provider" -K -N "") || return 1
+    for f in "$tmp"/id_*_rk*; do [[ "$f" == *.pub ]] || refs+=("$f"); done
+    if [ "${#refs[@]}" -ne 1 ]; then
+      warn "${#refs[@]} keys in the Secure Enclave, none chosen: copy the right one from $tmp to $key."
+      return 1
+    fi
+    mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
+    mv "${refs[0]}" "$key" && mv "${refs[0]}.pub" "$key.pub" && chmod 600 "$key" && rm -rf "$tmp"
+  fi
+  note "Public key, for GitHub and the servers:"
+  note "$(cat "$key.pub")"
+}
+
+# sops age key in the Secure Enclave, unlocked by Touch ID or the Mac password
+age_key() {
+  local file="$HOME/.config/sops/age/keys.txt"   # = SOPS_AGE_KEY_FILE in config.fish
+  command -v age-plugin-se >/dev/null || { warn "age-plugin-se missing: run 'mise run apply' first."; return 1; }
+
+  if grep -q '^AGE-PLUGIN-SE-1' "$file" 2>/dev/null; then
+    note "Secure Enclave key in $file: kept."
+  else
+    local tmp
+    tmp="$(mktemp -d)"
+    age-plugin-se keygen -o "$tmp/key.txt" || return 1
+    mkdir -p "$(dirname "$file")" && chmod 700 "$(dirname "$file")"
+    ( umask 077; cat "$tmp/key.txt" >> "$file" )   # appended: keys already there keep working
+    rm -rf "$tmp"
+  fi
+  local ids
+  ids="$(mktemp)"
+  grep '^AGE-PLUGIN-SE-1' "$file" > "$ids"
+  note "Recipient, for .sops.yaml (then 'sops updatekeys' from a Mac that already decrypts):"
+  note "$(age-plugin-se recipients -i "$ids")"
+  rm -f "$ids"
+}
+
+try "Touch ID for sudo" touch_id
+try "SSH key"           ssh_key
+try "sops age key"      age_key
+report
