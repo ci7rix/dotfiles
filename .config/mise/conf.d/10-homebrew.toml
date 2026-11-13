@@ -55,7 +55,9 @@ fi
 "brew-cask:keka" = { os = "macos" }
 "brew-cask:maccy" = { os = "macos" }
 "brew-cask:monitorcontrol" = { os = "macos" }
+"brew-cask:netbirdio/tap/netbird-ui" = { os = "macos" }   # NetBird app, from the NetBird tap
 "brew-cask:omniwm" = { os = "macos" }
+"brew-cask:phosphene" = { os = "macos" }   # video wallpapers, macOS 26+
 "brew-cask:transmission" = { os = "macos" }
 "brew-cask:utm" = { os = "macos" }
 "brew-cask:vlc" = { os = "macos" }
