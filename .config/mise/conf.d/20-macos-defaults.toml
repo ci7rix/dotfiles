@@ -43,6 +43,14 @@ key = "com.apple.mouse.tapBehavior"
 value = 1
 host = "current"
 
+# Ctrl+Space stays free for tmux: no "select the previous input source" shortcut
+# (system shortcut 60, written in full: Space with Control)
+[[bootstrap.macos.defaults_entries]]
+domain = "com.apple.symbolichotkeys"
+key = "AppleSymbolicHotKeys"
+path = ["60"]
+value = { enabled = false, value = { type = "standard", parameters = [32, 49, 262144] } }
+
 [bootstrap.macos.defaults."com.apple.desktopservices"]
 DSDontWriteNetworkStores = true
 DSDontWriteUSBStores = true
