@@ -29,6 +29,8 @@ fish_config theme choose "Rosé Pine Auto"
 # Prompt, smarter cd (cd learns your folders, cdi picks one with fzf), completions
 command -q starship; and starship init fish | source
 command -q zoxide; and zoxide init fish --cmd cd | source
+# fzf: Ctrl+R searches the history, Ctrl+T inserts a file, Alt+C goes to a folder
+command -q fzf; and fzf --fish | source
 command -q carapace; and carapace _carapace fish | source
 
 # Aliases: all of them here, one per line
