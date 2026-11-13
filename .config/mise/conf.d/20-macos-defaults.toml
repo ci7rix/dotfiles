@@ -35,7 +35,6 @@ fi
 # Apps opened at login (added to the list, never removed from it)
 [bootstrap.macos.login_items]
 apps = [
-  "/Applications/KeepingYouAwake.app",
   "/Applications/Maccy.app",
   "/Applications/MonitorControl.app",
   "/Applications/OmniWM.app",
