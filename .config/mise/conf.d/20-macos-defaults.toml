@@ -180,6 +180,16 @@ StandardHideWidgets = true
 StageManagerHideWidgets = true
 EnableStandardClickToShowDesktop = false
 
+# Siri off: not asked, no menu bar icon, no voice trigger, nothing on the lock screen
+[bootstrap.macos.defaults."com.apple.assistant.support"]
+"Assistant Enabled" = false
+
+[bootstrap.macos.defaults."com.apple.Siri"]
+UserHasDeclinedEnable = true
+StatusMenuVisible = false
+VoiceTriggerUserEnabled = false
+LockscreenEnabled = false
+
 [bootstrap.macos.defaults."com.apple.TextEdit"]
 RichText = 0
 SmartQuotes = false
