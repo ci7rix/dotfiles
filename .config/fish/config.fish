@@ -26,15 +26,21 @@ if not functions -q fisher
 end
 fish_config theme choose "Rosé Pine Auto"
 
-# Prompt, smarter cd, completions
+# Prompt, smarter cd (cd learns your folders, cdi picks one with fzf), completions
 command -q starship; and starship init fish | source
-command -q zoxide; and zoxide init fish | source
+command -q zoxide; and zoxide init fish --cmd cd | source
 command -q carapace; and carapace _carapace fish | source
 
 # Aliases: all of them here, one per line
 alias k kubectl
 alias vi nvim
 alias vim nvim
+
+# repo: pick a repository cloned by ghq and go there
+function repo --description "Go to a repository cloned by ghq"
+    set -l dir (ghq list --full-path | fzf --height 40% --reverse)
+    and cd $dir
+end
 
 # One tmux session: created by the first terminal, taken over by the next ones
 if not set -q TMUX; and command -q tmux

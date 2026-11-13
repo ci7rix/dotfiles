@@ -17,5 +17,6 @@ login_shell = "fish"
 "~/.config/omniwm" = {}
 "~/.config/starship" = {}
 "~/.config/tmux" = {}
+"~/.config/zed/settings.json" = {}
 # "docker compose" without the hyphen: the Homebrew binary as a docker CLI plugin
 "~/.docker/cli-plugins/docker-compose" = { source = "/opt/homebrew/opt/docker-compose/bin/docker-compose" }

@@ -8,6 +8,15 @@ if ! command -v brew >/dev/null 2>&1 && [ ! -x /opt/homebrew/bin/brew ]; then
 fi
 '''
 
+# Colima runs as a Homebrew service: started now and at every login
+[bootstrap.hooks.post-packages]
+run = '''
+brew="$(command -v brew || echo /opt/homebrew/bin/brew)"
+if ! "$brew" services list | awk '$1 == "colima" && $2 == "started" { found = 1 } END { exit !found }'; then
+  "$brew" services start colima
+fi
+'''
+
 [bootstrap.packages]
 # Command-line tools
 "brew:age" = "latest"
@@ -18,6 +27,7 @@ fi
 "brew:docker" = "latest"
 "brew:docker-compose" = "latest"
 "brew:fish" = "latest"
+"brew:fzf" = "latest"
 "brew:ghq" = "latest"
 "brew:git" = "latest"
 "brew:helm" = "latest"
