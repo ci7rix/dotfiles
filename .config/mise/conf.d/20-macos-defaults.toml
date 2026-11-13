@@ -32,6 +32,15 @@ if [ "$(uname)" = "Darwin" ]; then
 fi
 '''
 
+# Apps opened at login (added to the list, never removed from it)
+[bootstrap.macos.login_items]
+apps = [
+  "/Applications/KeepingYouAwake.app",
+  "/Applications/Maccy.app",
+  "/Applications/MonitorControl.app",
+  "/Applications/OmniWM.app",
+]
+
 # Tap to click, on the built-in and Bluetooth trackpads. macOS also wants
 # com.apple.mouse.tapBehavior, for this user and for this Mac (see below).
 [bootstrap.macos.trackpad]

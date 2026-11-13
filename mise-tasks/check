@@ -111,6 +111,7 @@ needs nvim     "nvim: init.lua"            nvim_syntax
 needs starship "starship: starship.toml"   starship_config
 needs ghostty  "ghostty: config"           in_sandbox ghostty +validate-config
 needs python3  "karabiner: karabiner.json" python3 -m json.tool "$REPO_ROOT/.config/karabiner/karabiner.json"
+needs python3  "zed: settings.json" python3 -m json.tool "$REPO_ROOT/.config/zed/settings.json"
 
 # --- Summary --------------------------------------------------------------------
 printf '\n%d passed, %d failed, %d skipped\n' "$PASS" "$FAIL" "$SKIP"

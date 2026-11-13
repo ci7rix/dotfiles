@@ -19,7 +19,7 @@ Ensuite, à la main :
 1. Se déconnecter et se reconnecter (fish devient le shell de connexion).
 2. Ajouter sur GitHub et sur les serveurs la clé SSH affichée par `setup`.
 3. Ajouter au `.sops.yaml` le destinataire age affiché par `setup`, puis lancer `sops updatekeys` depuis un Mac qui déchiffre déjà (ou avec la clé de secours).
-4. Accepter les autorisations de Karabiner-Elements et d'OmniWM, et les mettre à l'ouverture de session avec Maccy et KeepingYouAwake.
+4. Accepter les autorisations de Karabiner-Elements et d'OmniWM.
 
 ## Tâches
 
@@ -52,6 +52,7 @@ Une seule façon de faire par type, puis `mise run apply` :
 | App | `.config/mise/conf.d/10-homebrew.toml` | `"brew-cask:nom" = { os = "macos" }`, dans l'ordre alphabétique |
 | Outil dont mise gère la version | `.config/mise/conf.d/30-tools.toml` | `nom = "latest"` |
 | Réglage macOS | `.config/mise/conf.d/20-macos-defaults.toml` | Une ligne dans la table de son domaine |
+| App à l'ouverture de session | `.config/mise/conf.d/20-macos-defaults.toml` | Son chemin dans `[bootstrap.macos.login_items]` |
 | Extension ou réglage Firefox | `.config/mise/conf.d/40-firefox.toml` | Une ligne par extension, avec son ID (`about:support`), ou une ligne dans la table du réglage. Redémarrer Firefox, vérifier dans `about:policies` |
 | Dotfile | `.config/…` dans le repo | Plus une ligne `"~/.config/…" = {}` dans `[dotfiles]` de `.config/mise/mise.toml` |
 | Alias | `.config/fish/config.fish` | `alias nom commande`, dans le bloc des alias |
