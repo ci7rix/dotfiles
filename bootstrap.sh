@@ -12,7 +12,7 @@
 set -euo pipefail
 
 REPO_URL="https://github.com/ci7rix/dotfiles"
-REPO_DIR="$HOME/Developer/github.com/ci7rix/dotfiles"   # = dotfiles.root in mise.toml (mise run check compares them)
+REPO_DIR="$HOME/Developer/github.com/ci7rix/dotfiles"   # = dotfiles.root in config.toml (mise run check compares them)
 export PATH="$HOME/.local/bin:/opt/homebrew/bin:$PATH"
 
 step() { printf '\n\033[1;34m==>\033[0m %s\n' "$*"; }
@@ -55,6 +55,12 @@ mise --version
 # --- 3. Clone this repo and apply it --------------------------------------------
 step "mise bootstrap from $REPO_URL into $REPO_DIR"
 mkdir -p "$(dirname "$REPO_DIR")"
+# mise links ~/.config/mise into the repo only if nothing is there: set aside anything else
+if [ -e "$HOME/.config/mise" ] && [ "$(cd "$HOME/.config/mise" && pwd -P)" != "$REPO_DIR/.config/mise" ]; then
+  backup="$HOME/.local/state/dotfiles/backup/$(date +%Y-%m-%d-%H%M%S)/.config"
+  mkdir -p "$backup" && mv "$HOME/.config/mise" "$backup/"
+  echo "Set aside the previous ~/.config/mise in $backup"
+fi
 mise bootstrap --from "$REPO_URL" --from-dir "$REPO_DIR" --config-dir .config/mise --yes "$@"
 
 # --- 4. This Mac only -----------------------------------------------------------

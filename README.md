@@ -54,7 +54,7 @@ Une seule façon de faire par type, puis `mise run apply` :
 | Réglage macOS | `.config/mise/conf.d/20-macos-defaults.toml` | Une ligne dans la table de son domaine |
 | App à l'ouverture de session | `.config/mise/conf.d/20-macos-defaults.toml` | Son chemin dans `[bootstrap.settings.macos.login_items]` |
 | Extension ou réglage Firefox | `.config/mise/conf.d/40-firefox.toml` | Une ligne par extension, avec son ID (`about:support`), ou une ligne dans la table du réglage. Redémarrer Firefox, vérifier dans `about:policies` |
-| Dotfile | `.config/…` dans le repo | Plus une ligne `"~/.config/…" = {}` dans `[dotfiles]` de `.config/mise/mise.toml` |
+| Dotfile | `.config/…` dans le repo | Plus une ligne `"~/.config/…" = {}` dans `[dotfiles]` de `.config/mise/config.toml` |
 | Alias | `.config/fish/config.fish` | `alias nom commande`, dans le bloc des alias |
 | Plugin fish | `.config/fish/fish_plugins` | Une ligne `auteur/plugin`, puis `mise run update` |
 | Réglage propre à un Mac (clé, secret) | `mise-tasks/setup` | Une fonction qui vérifie avant d'agir, appelée par `try` |
