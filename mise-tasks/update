@@ -5,6 +5,7 @@ set -uo pipefail
 
 # In a function: bash has read the whole file before git pull can change it
 main() {
+  try "mise itself"       mise self-update --yes   # the config uses recent mise features
   try "Pull this repo"    git -C "$REPO_ROOT" pull --ff-only
   try "Apply the config"  "$REPO_ROOT/mise-tasks/apply"
   try "Homebrew packages" mise_global bootstrap packages upgrade
