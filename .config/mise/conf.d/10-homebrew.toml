@@ -10,12 +10,13 @@ fi
 
 # Done by Homebrew itself, after the packages below:
 # - Colima runs as a Homebrew service: started now and at every login
-# - the NetBird app comes from the NetBird tap, which mise cannot read
-#   without Ruby 3: Homebrew installs it with its own Ruby
+# - apps from other taps, which mise cannot read without Ruby 3:
+#   Homebrew installs them with its own Ruby (NetBird, topf from PostFinance)
 [bootstrap.hooks.post-packages]
 run = '''
 brew="$(command -v brew || echo /opt/homebrew/bin/brew)"
 "$brew" list --cask netbird-ui >/dev/null 2>&1 || "$brew" install --cask netbirdio/tap/netbird-ui
+"$brew" list --cask topf >/dev/null 2>&1 || "$brew" install --cask postfinance/tap/topf
 if ! "$brew" services list | awk '$1 == "colima" && $2 == "started" { found = 1 } END { exit !found }'; then
   "$brew" services start colima
 fi
