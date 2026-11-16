@@ -5,6 +5,9 @@
 set -euo pipefail
 . "$(dirname "$0")/.lib.sh"
 
+step "Global mise config"
+link_mise_config
+
 step "Files in the way of a dotfile"
 set_aside_conflicts
 

@@ -69,11 +69,12 @@ section "mise"
 same_root() {
   local dir
   dir="$(sed -n 's/^REPO_DIR="\$HOME\/\([^"]*\)".*/\1/p' "$REPO_ROOT/bootstrap.sh")"
-  echo "mise.toml: $ROOT, bootstrap.sh: ~/$dir"
+  echo "config.toml: $ROOT, bootstrap.sh: ~/$dir"
   [ "$ROOT" = "~/$dir" ]
 }
 check "dotfiles.root is where bootstrap.sh clones" same_root
-check "mise loads the config"          in_sandbox mise config ls
+config_loaded() { in_sandbox mise config ls | tee /dev/stderr | grep -q 'config.toml'; }
+check "mise loads config.toml"         config_loaded
 check "mise bootstrap --dry-run"       in_sandbox mise bootstrap --dry-run
 check "mise bootstrap --only dotfiles" in_sandbox mise bootstrap --only dotfiles --yes
 

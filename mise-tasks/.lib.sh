@@ -1,7 +1,7 @@
 # Shared by every task. Sourced, never run: mise ignores names starting with ".".
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
-MISE_CONFIG="$REPO_ROOT/.config/mise/mise.toml"
+MISE_CONFIG="$REPO_ROOT/.config/mise/config.toml"
 BACKUP_DIR="$HOME/.local/state/dotfiles/backup/$(date +%Y-%m-%d-%H%M%S)"
 DRY_RUN="${usage_dry_run:-false}"
 
@@ -34,8 +34,21 @@ report() {
 # run from HOME so the repo is not loaded a second time as a project
 mise_global() { (cd "$HOME" && mise "$@"); }
 
+# --- Global mise config ---------------------------------------------------------
+# ~/.config/mise must be a link to this repo's .config/mise, or mise bootstrap
+# reads another config and applies nothing from here. Anything else in its place
+# is set aside, never deleted.
+link_mise_config() {
+  local want="$REPO_ROOT/.config/mise" dir="$HOME/.config/mise"
+  if [ "$(cd "$dir" 2>/dev/null && pwd -P)" = "$want" ]; then note "linked"; return; fi
+  if [ -e "$dir" ] || [ -L "$dir" ]; then set_aside "$dir"; fi
+  run mkdir -p "$HOME/.config"
+  run ln -s "$want" "$dir"
+  if [ "$DRY_RUN" != "true" ]; then note "linked: ~/.config/mise -> $want"; fi
+}
+
 # --- Dotfiles -----------------------------------------------------------------
-# Targets of the [dotfiles] table of mise.toml, without the leading "~/"
+# Targets of the [dotfiles] table of config.toml, without the leading "~/"
 dotfile_targets() {
   awk '/^\[dotfiles\]/ { f = 1; next } /^\[/ { f = 0 }
        f && /^"~\// { sub(/^"~\//, ""); sub(/".*/, ""); print }' "$MISE_CONFIG"
