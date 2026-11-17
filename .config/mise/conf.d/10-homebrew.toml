@@ -33,9 +33,12 @@ fi
 "brew:docker-compose" = "latest"
 "brew:fish" = "latest"
 "brew:fzf" = "latest"
+"brew:gh" = "latest"
 "brew:ghq" = "latest"
 "brew:git" = "latest"
 "brew:helm" = "latest"
+"brew:incus" = "latest"
+"brew:jq" = "latest"
 "brew:kind" = "latest"
 "brew:kubernetes-cli" = "latest"
 "brew:neovim" = "latest"
@@ -57,9 +60,11 @@ fi
 "brew-cask:font-monaspace" = { os = "macos" }
 "brew-cask:ghostty" = { os = "macos" }
 "brew-cask:karabiner-elements" = { os = "macos" }
+"brew-cask:keepingyouawake" = { os = "macos" }
 "brew-cask:keka" = { os = "macos" }
 "brew-cask:maccy" = { os = "macos" }
 "brew-cask:monitorcontrol" = { os = "macos" }
+"brew-cask:netnewswire" = { os = "macos" }
 "brew-cask:omniwm" = { os = "macos" }
 "brew-cask:phosphene" = { os = "macos" }   # video wallpapers, macOS 26+
 "brew-cask:transmission" = { os = "macos" }
