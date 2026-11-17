@@ -2,3 +2,4 @@
 [tools]
 python = "latest"
 powershell = "latest"
+node = "latest"
