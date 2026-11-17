@@ -28,7 +28,7 @@ Dans le repo, `mise trust` une fois, puis `mise run` pour choisir dans la liste.
 | Tâche | Rôle |
 |---|---|
 | `apply` | Applique la config : paquets, dotfiles, réglages macOS, shell, outils. `--only dotfiles,defaults` pour une partie |
-| `update` | Récupère le repo, l'applique, puis met à jour paquets, outils mise, plugins fish et Neovim |
+| `update` | Récupère le repo, l'applique, puis met à jour paquets, outils mise, plugins fish et Neovim. Liste à la fin ce qui n'est pas committé dans le repo |
 | `setup` | Ce qui est propre à ce Mac : Touch ID pour `sudo`, clé SSH et clé age dans la Secure Enclave. Garde ce qui existe |
 | `reset` | Repart de zéro pour les dotfiles : liens, plugins fish et Neovim, serveur tmux. Ne touche pas au reste de `~/.config` |
 | `check` | Teste la config dans un HOME temporaire, sans rien installer |
