@@ -1,6 +1,16 @@
+# [bootstrap.settings] needs this release: an older mise says to update
+# instead of only warning about an unknown field
+min_version = { soft = "2026.11.8" }
+
 [settings]
 dotfiles.root = "~/Developer/github.com/ci7rix/dotfiles"   # = REPO_DIR in bootstrap.sh
 experimental = true   # mise bootstrap is still experimental upstream
+
+# `mise use -g` and `mise bootstrap packages use -g` write where this repo keeps
+# tools and packages, never in this file
+[settings.write_targets]
+tools = "~/.config/mise/conf.d/30-tools.toml"
+packages = "~/.config/mise/conf.d/10-homebrew.toml"
 
 [bootstrap.user]
 login_shell = "fish"

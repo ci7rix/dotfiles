@@ -12,6 +12,7 @@ main() {
   try "mise tools"        mise_global upgrade
   try "fish plugins"      fish -c 'fisher update'
   try "Neovim plugins"    nvim --headless "+lua vim.pack.update(nil, { force = true })" +qa
-  report && echo "Commit .config/nvim/nvim-pack-lock.json if it changed."
+  uncommitted
+  report
 }
 main

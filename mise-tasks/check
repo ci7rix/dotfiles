@@ -73,6 +73,13 @@ same_root() {
   [ "$ROOT" = "~/$dir" ]
 }
 check "dotfiles.root is where bootstrap.sh clones" same_root
+tools_in_one_file() {
+  local dir="$REPO_ROOT/.config/mise" found
+  found="$(cd "$dir" && grep -l '^\[tools\]' config.toml conf.d/*.toml)"
+  echo "$found"
+  [ "$found" = "conf.d/30-tools.toml" ]
+}
+check "[tools] only in conf.d/30-tools.toml"     tools_in_one_file
 config_loaded() { in_sandbox mise config ls | tee /dev/stderr | grep -q 'config.toml'; }
 check "mise loads config.toml"         config_loaded
 check "mise bootstrap --dry-run"       in_sandbox mise bootstrap --dry-run

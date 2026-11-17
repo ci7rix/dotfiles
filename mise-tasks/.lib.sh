@@ -30,6 +30,17 @@ report() {
   echo "Done."
 }
 
+# Apps rewrite their linked config inside this repo (OmniWM, Karabiner, Zed,
+# the Neovim lock file): list what is not committed, before a later pull trips on it
+uncommitted() {
+  local changes
+  changes="$(git -C "$REPO_ROOT" status --short)"
+  if [ -n "$changes" ]; then
+    warn "Not committed in $REPO_ROOT:"
+    printf '%s\n' "$changes" | sed 's/^/  /' >&2
+  fi
+}
+
 # mise with the global config only (~/.config/mise, a link into this repo):
 # run from HOME so the repo is not loaded a second time as a project
 mise_global() { (cd "$HOME" && mise "$@"); }
