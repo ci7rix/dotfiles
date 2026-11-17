@@ -1,3 +1,4 @@
 # Tools whose version mise manages
 [tools]
 python = "latest"
+powershell = "latest"

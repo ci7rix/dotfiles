@@ -1,2 +1,4 @@
 .DS_Store
 .config/karabiner/automatic_backups/
+.config/omniwm/settings.toml.pre-v*
+.config/omniwm/shell/default/
