@@ -28,30 +28,41 @@ fi
 "brew:age-plugin-se" = { os = "macos" }
 "brew:aria2" = "latest"
 "brew:carapace" = "latest"
+"brew:cilium-cli" = "latest"
 "brew:colima" = "latest"
 "brew:docker" = "latest"
 "brew:docker-compose" = "latest"
+"brew:fd" = "latest"
 "brew:fish" = "latest"
+"brew:fluxcd" = "latest"
 "brew:fzf" = "latest"
 "brew:gh" = "latest"
 "brew:ghq" = "latest"
 "brew:git" = "latest"
 "brew:helm" = "latest"
+"brew:hubble" = "latest"
 "brew:incus" = "latest"
+"brew:iperf3" = "latest"
 "brew:jq" = "latest"
 "brew:kind" = "latest"
+"brew:kubectl-cnpg" = "latest"
 "brew:kubernetes-cli" = "latest"
+"brew:mtr" = "latest"
 "brew:neovim" = "latest"
 "brew:nmap" = "latest"
 "brew:pam-reattach" = { os = "macos" }
 "brew:picocom" = "latest"
 "brew:rclone" = "latest"
+"brew:restic" = "latest"
+"brew:ripgrep" = "latest"
+"brew:shellcheck" = "latest"
 "brew:sops" = "latest"
 "brew:starship" = "latest"
 "brew:talosctl" = "latest"
 "brew:tmux" = "latest"
 "brew:tree" = "latest"
 "brew:wget" = "latest"
+"brew:yq" = "latest"
 "brew:zoxide" = "latest"
 # Apps (casks, macOS only)
 "brew-cask:cog-app" = { os = "macos" }
@@ -70,4 +81,5 @@ fi
 "brew-cask:transmission" = { os = "macos" }
 "brew-cask:utm" = { os = "macos" }
 "brew-cask:vlc" = { os = "macos" }
+"brew-cask:wireshark-app" = { os = "macos" }
 "brew-cask:zed" = { os = "macos" }
