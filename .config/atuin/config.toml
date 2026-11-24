@@ -1,0 +1,8 @@
+# Shell history, synced and end-to-end encrypted. Log in with `mise run setup`.
+# The history database, the encryption key and the session stay out of this repo.
+
+# Enter puts the command on the prompt for editing, it does not run it
+enter_accept = false
+
+# Sync server. The default is the public one; a self-hosted server goes here.
+# sync_address = "https://api.atuin.sh"

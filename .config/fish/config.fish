@@ -6,6 +6,8 @@ set -gx LANG en_US.UTF-8
 set -gx EDITOR nvim
 set -gx VISUAL nvim
 set -gx STARSHIP_CONFIG "$XDG_CONFIG_HOME/starship/starship.toml"
+# atuin reads its config here on every version (newer ones default to ~/.atuin)
+set -gx ATUIN_CONFIG_DIR "$XDG_CONFIG_HOME/atuin"
 
 # Keys created by `mise run setup`: sops age key, SSH key in the Secure Enclave (macOS 26+)
 set -gx SOPS_AGE_KEY_FILE "$XDG_CONFIG_HOME/sops/age/keys.txt"
@@ -29,8 +31,11 @@ fish_config theme choose "Rosé Pine Auto"
 # Prompt, smarter cd (cd learns your folders, cdi picks one with fzf), completions
 command -q starship; and starship init fish | source
 command -q zoxide; and zoxide init fish --cmd cd | source
-# fzf: Ctrl+R searches the history, Ctrl+T inserts a file, Alt+C goes to a folder
+# fzf: Ctrl+T inserts a file, Alt+C goes to a folder
 command -q fzf; and fzf --fish | source
+# atuin: Ctrl+R and the Up arrow search the synced history. After fzf, which
+# also binds Ctrl+R. "?" stays a plain character (no Atuin AI).
+command -q atuin; and atuin init fish --disable-ai | source
 command -q carapace; and carapace _carapace fish | source
 
 # Aliases: all of them here, one per line

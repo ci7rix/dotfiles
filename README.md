@@ -13,6 +13,7 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/ci7rix/dotfiles/main/boo
 ```
 
 Le script installe les Command Line Tools (git) et mise, clone ce repo dans `~/Developer/github.com/ci7rix/dotfiles`, applique tout, puis lance `mise run setup`.
+`setup` demande le nom d'utilisateur, le mot de passe et la clé atuin (dans le gestionnaire de mots de passe) pour récupérer l'historique du shell.
 
 Ensuite, à la main :
 
@@ -29,7 +30,7 @@ Dans le repo, `mise trust` une fois, puis `mise run` pour choisir dans la liste.
 |---|---|
 | `apply` | Applique la config : paquets, dotfiles, réglages macOS, shell, outils. `--only dotfiles,defaults` pour une partie |
 | `update` | Récupère le repo, l'applique, puis met à jour paquets, outils mise, plugins fish et Neovim. Liste à la fin ce qui n'est pas committé dans le repo |
-| `setup` | Ce qui est propre à ce Mac : Touch ID pour `sudo`, clé SSH et clé age dans la Secure Enclave. Garde ce qui existe |
+| `setup` | Ce qui est propre à ce Mac : Touch ID pour `sudo`, clé SSH et clé age dans la Secure Enclave, connexion à la synchro de l'historique (atuin). Garde ce qui existe |
 | `reset` | Repart de zéro pour les dotfiles : liens, plugins fish et Neovim, serveur tmux. Ne touche pas au reste de `~/.config` |
 | `check` | Teste la config dans un HOME temporaire, sans rien installer |
 | `release` | Lance `check`, pose un tag daté sur le commit et le pousse : un état connu bon où revenir |
@@ -41,6 +42,13 @@ Un fichier qui occupe la place d'un dotfile n'est jamais supprimé : il est dép
 
 Dans tmux, `Ctrl+Espace` puis `Espace` affiche les raccourcis principaux, `Ctrl+Espace` puis `?` les liste tous.
 Sur un clavier suisse romand, les caractères faits avec Option (`[ ] { } | \ #`) se tapent avec Option droite : Option gauche + chiffre est pris par OmniWM.
+
+## Historique du shell
+
+[atuin](https://atuin.sh) garde l'historique dans une base locale et le synchronise, chiffré de bout en bout. `Ctrl+R` ou la flèche du haut ouvre la recherche, `Entrée` place la commande sur la ligne sans l'exécuter.
+`cd` retient les dossiers visités (zoxide) : `cd dot` va dans le dossier le plus utilisé dont le nom contient « dot ».
+
+Une seule fois : répondre `n` à `mise run setup` pour créer le compte, puis ranger le nom d'utilisateur, le mot de passe et la sortie de `atuin key` dans le gestionnaire de mots de passe. Sans la clé, l'historique synchronisé est illisible.
 
 ## Ajouter quelque chose
 
