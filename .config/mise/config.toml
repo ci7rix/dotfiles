@@ -17,6 +17,7 @@ login_shell = "fish"
 
 # Linked from this repo (same path under dotfiles.root)
 [dotfiles]
+"~/.config/atuin/config.toml" = {}
 "~/.config/fish/config.fish" = {}
 "~/.config/fish/fish_plugins" = {}
 "~/.config/ghostty" = {}

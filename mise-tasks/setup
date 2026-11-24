@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#MISE description="Set up what belongs to this Mac only: Touch ID for sudo, SSH key, sops age key (keeps what exists)"
+#MISE description="Set up what belongs to this Mac only: Touch ID for sudo, SSH key, sops age key, shell history sync (keeps what exists)"
 #
 # Each step checks first and never replaces anything: safe to run again.
 set -uo pipefail
@@ -79,7 +79,38 @@ age_key() {
   rm -f "$ids"
 }
 
-try "Touch ID for sudo" touch_id
-try "SSH key"           ssh_key
-try "sops age key"      age_key
+# Shell history: log in to the atuin sync server and fetch the history
+atuin_sync() {
+  export ATUIN_CONFIG_DIR="$HOME/.config/atuin"   # = ATUIN_CONFIG_DIR in config.fish
+  command -v atuin >/dev/null || { warn "atuin missing: run 'mise run apply' first."; return 1; }
+
+  local out answer
+  if out="$(atuin status 2>&1)"; then
+    note "Logged in: kept."
+  elif ! grep -qi 'not logged in' <<<"$out"; then
+    warn "atuin status failed (offline?): $out"
+    return 1
+  else
+    [ -t 0 ] || { warn "Not logged in, and no terminal to ask: run 'mise run setup' in a terminal."; return 1; }
+    read -r -p "    Log in to your existing atuin account? [Y/n] (n = create the account) " answer
+    case "$answer" in
+      n|N)
+        atuin register || return 1                 # asks for username, e-mail, password
+        atuin import fish || warn "fish history not imported."
+        note "Save the output of 'atuin key' in your password manager NOW:"
+        note "it is asked at every login and cannot be recovered."
+        ;;
+      *)
+        note "Username, password and key are in your password manager."
+        atuin login || return 1                    # asks for username, password, key
+        ;;
+    esac
+  fi
+  atuin sync
+}
+
+try "Touch ID for sudo"  touch_id
+try "SSH key"            ssh_key
+try "sops age key"       age_key
+try "Shell history sync" atuin_sync
 report

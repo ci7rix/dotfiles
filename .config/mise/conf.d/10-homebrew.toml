@@ -27,6 +27,7 @@ fi
 "brew:age" = "latest"
 "brew:age-plugin-se" = { os = "macos" }
 "brew:aria2" = "latest"
+"brew:atuin" = "latest"
 "brew:carapace" = "latest"
 "brew:cilium-cli" = "latest"
 "brew:colima" = "latest"
