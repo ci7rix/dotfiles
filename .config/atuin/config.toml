@@ -6,3 +6,23 @@ enter_accept = false
 
 # Sync server. The default is the public one; a self-hosted server goes here.
 # sync_address = "https://api.atuin.sh"
+
+style = "compact"
+search_mode = "prefix"
+
+# Clean UI: no header row, no tabs, no 1-9 shortcuts
+show_help = false
+show_tabs = false
+show_numeric_shortcuts = false
+
+[daemon]
+enabled = true
+autostart = true
+
+# Sessions of the coding agents (Claude Code, Codex, opencode) are recorded by
+# the daemon and synced like the history, encrypted. List them: atuin threads
+[threads]
+capture = true
+
+[tmux]
+enabled = true
