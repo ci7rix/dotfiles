@@ -19,9 +19,10 @@ show_numeric_shortcuts = false
 enabled = true
 autostart = true
 
-# Atuin AI: "?" on an empty prompt asks for a command (needs an Atuin Hub account)
-[ai]
-enabled = true
+# Sessions of the coding agents (Claude Code, Codex, opencode) are recorded by
+# the daemon and synced like the history, encrypted. List them: atuin threads
+[threads]
+capture = true
 
 [tmux]
 enabled = true

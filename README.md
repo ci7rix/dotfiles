@@ -45,7 +45,7 @@ Sur un clavier suisse romand, les caractères faits avec Option (`[ ] { } | \ #`
 
 ## Historique du shell
 
-[atuin](https://atuin.sh) garde l'historique dans une base locale et le synchronise, chiffré de bout en bout. `Ctrl+R` ou la flèche du haut ouvre la recherche, `Entrée` place la commande sur la ligne sans l'exécuter. `?` sur une ligne vide ouvre Atuin AI, qui propose une commande à partir d'une description.
+[atuin](https://atuin.sh) garde l'historique dans une base locale et le synchronise, chiffré de bout en bout. `Ctrl+R` ou la flèche du haut ouvre la recherche, `Entrée` place la commande sur la ligne sans l'exécuter. Il enregistre et synchronise aussi les sessions des agents de code (`atuin threads` pour les lister).
 `cd` retient les dossiers visités (zoxide) : `cd dot` va dans le dossier le plus utilisé dont le nom contient « dot ».
 
 Une seule fois : répondre `n` à `mise run setup` pour créer le compte, puis ranger le nom d'utilisateur, le mot de passe et la sortie de `atuin key` dans le gestionnaire de mots de passe. Sans la clé, l'historique synchronisé est illisible.
