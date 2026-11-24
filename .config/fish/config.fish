@@ -34,8 +34,8 @@ command -q zoxide; and zoxide init fish --cmd cd | source
 # fzf: Ctrl+T inserts a file, Alt+C goes to a folder
 command -q fzf; and fzf --fish | source
 # atuin: Ctrl+R and the Up arrow search the synced history. After fzf, which
-# also binds Ctrl+R. "?" stays a plain character (no Atuin AI).
-command -q atuin; and atuin init fish --disable-ai | source
+# also binds Ctrl+R. "?" on an empty prompt opens Atuin AI.
+command -q atuin; and atuin init fish | source
 command -q carapace; and carapace _carapace fish | source
 
 # Aliases: all of them here, one per line
