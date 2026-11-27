@@ -23,6 +23,3 @@ autostart = true
 # the daemon and synced like the history, encrypted. List them: atuin threads
 [threads]
 capture = true
-
-[tmux]
-enabled = true
