@@ -8,7 +8,7 @@ main() {
   try "mise itself"       mise self-update --yes   # the config uses recent mise features
   try "Pull this repo"    git -C "$REPO_ROOT" pull --ff-only
   try "Apply the config"  "$REPO_ROOT/mise-tasks/apply"
-  try "Homebrew packages" mise_global bootstrap packages upgrade
+  try "Packages"          mise_global bootstrap packages upgrade   # Homebrew on macOS, apt on Linux
   try "mise tools"        mise_global upgrade
   try "fish plugins"      fish -c 'fisher update'
   try "Neovim plugins"    nvim --headless "+lua vim.pack.update(nil, { force = true })" +qa

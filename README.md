@@ -1,6 +1,6 @@
 # dotfiles
 
-Configuration de mon Mac, appliquée par [mise](https://mise.jdx.dev).
+Configuration de mon Mac, appliquée par [mise](https://mise.jdx.dev). Marche aussi sous Debian et Ubuntu, en ligne de commande seulement (voir [Linux](#linux)).
 But : réinitialiser le poste à tout moment et retrouver un environnement propre en une commande.
 Tout est idempotent : chaque commande peut être relancée sans rien casser.
 
@@ -56,7 +56,8 @@ Une seule façon de faire par type, puis `mise run apply` :
 
 | Quoi | Où | Comment |
 |---|---|---|
-| Outil en ligne de commande | `.config/mise/conf.d/10-homebrew.toml` | `"brew:nom" = "latest"`, dans l'ordre alphabétique |
+| Outil en ligne de commande | `.config/mise/conf.d/10-homebrew.toml` | `"brew:nom" = { os = "macos" }`, dans l'ordre alphabétique. Pour Linux aussi : voir la ligne suivante |
+| Le même outil sous Linux | `.config/mise/conf.d/30-tools.toml` (s'il est dans `mise registry`) ou `15-apt.toml` | `nom = { version = "latest", os = "linux" }`, sinon `"apt:nom" = "latest"` |
 | App | `.config/mise/conf.d/10-homebrew.toml` | `"brew-cask:nom" = { os = "macos" }`, dans l'ordre alphabétique |
 | Outil dont mise gère la version | `.config/mise/conf.d/30-tools.toml` | `nom = "latest"` |
 | Réglage macOS | `.config/mise/conf.d/20-macos-defaults.toml` | Une ligne dans la table de son domaine |
@@ -67,6 +68,14 @@ Une seule façon de faire par type, puis `mise run apply` :
 | Plugin fish | `.config/fish/fish_plugins` | Une ligne `auteur/plugin`, puis `mise run update` |
 | Réglage propre à un Mac (clé, secret) | `mise-tasks/setup` | Une fonction qui vérifie avant d'agir, appelée par `try` |
 | Tâche | `mise-tasks/nom` | Script bash exécutable qui charge `.lib.sh` |
+
+## Linux
+
+Debian ou Ubuntu, sans interface graphique : la même commande `bootstrap.sh`, puis `mise run setup` (groupe `docker`, synchro de l'historique).
+
+- Pas de Homebrew : les outils viennent de mise (`[tools]` avec `os = "linux"` dans `30-tools.toml`), et ce qui doit être au système de apt (`15-apt.toml` : fish, git, Docker Engine, outils réseau).
+- Les apps macOS et leur config (Ghostty, Karabiner, OmniWM, Zed) ne sont pas installées : leurs dotfiles ont `variants = [{ os = "macos" }]`.
+- Dans tmux, `y` copie par OSC 52 : le texte arrive dans le presse-papiers du terminal local, même en SSH.
 
 ## Clé de secours sops
 

@@ -86,7 +86,10 @@ check "mise bootstrap --dry-run"       in_sandbox mise bootstrap --dry-run
 check "mise bootstrap --only dotfiles" in_sandbox mise bootstrap --only dotfiles --yes
 
 section "Dotfiles linked"
+# Entries with variants = [{ os = "macos" }] are not linked elsewhere
+macos_only() { grep -F "\"~/$1\"" "$MISE_CONFIG" | grep -q 'os = "macos"'; }
 while IFS= read -r t; do
+  if [ "$(uname)" != "Darwin" ] && macos_only "$t"; then skip "~/$t" "macOS only"; continue; fi
   # -L too: a link to a tool that is not installed here still counts
   check "~/$t" bash -c '[ -e "$1" ] || [ -L "$1" ]' _ "$SANDBOX/$t"
 done < <(dotfile_targets)

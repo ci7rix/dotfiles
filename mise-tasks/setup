@@ -1,11 +1,9 @@
 #!/usr/bin/env bash
-#MISE description="Set up what belongs to this Mac only: Touch ID for sudo, SSH key, sops age key, shell history sync (keeps what exists)"
+#MISE description="Set up what belongs to this machine only: Touch ID for sudo, SSH key, sops age key (macOS), docker group (Linux), shell history sync (keeps what exists)"
 #
 # Each step checks first and never replaces anything: safe to run again.
 set -uo pipefail
 . "$(dirname "$0")/.lib.sh"
-
-[ "$(uname)" = "Darwin" ] || { echo "macOS only, nothing to do."; exit 0; }
 
 # Touch ID for sudo, inside tmux too
 touch_id() {
@@ -79,6 +77,17 @@ age_key() {
   rm -f "$ids"
 }
 
+# Linux: use Docker without sudo (Docker Engine from apt:docker.io)
+docker_group() {
+  getent group docker >/dev/null || { warn "No docker group: run 'mise run apply' first."; return 1; }
+  if id -nG "$USER" | tr ' ' '\n' | grep -qx docker; then
+    note "$USER is in the docker group: kept."
+  else
+    sudo usermod -aG docker "$USER" || return 1
+    note "Added $USER to the docker group: log out and back in for it to take effect."
+  fi
+}
+
 # Shell history: log in to the atuin sync server and fetch the history
 atuin_sync() {
   export ATUIN_CONFIG_DIR="$HOME/.config/atuin"   # = ATUIN_CONFIG_DIR in config.fish
@@ -109,8 +118,12 @@ atuin_sync() {
   atuin sync
 }
 
-try "Touch ID for sudo"  touch_id
-try "SSH key"            ssh_key
-try "sops age key"       age_key
+if [ "$(uname)" = "Darwin" ]; then
+  try "Touch ID for sudo"  touch_id
+  try "SSH key"            ssh_key
+  try "sops age key"       age_key
+else
+  try "docker group"       docker_group
+fi
 try "Shell history sync" atuin_sync
 report

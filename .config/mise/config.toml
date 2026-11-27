@@ -15,19 +15,21 @@ packages = "~/.config/mise/conf.d/10-homebrew.toml"
 [bootstrap.user]
 login_shell = "fish"
 
-# Linked from this repo (same path under dotfiles.root)
+# Linked from this repo (same path under dotfiles.root).
+# variants = [{ os = "macos" }]: macOS apps, not linked on Linux
 [dotfiles]
 "~/.config/atuin/config.toml" = {}
 "~/.config/fish/config.fish" = {}
 "~/.config/fish/fish_plugins" = {}
-"~/.config/ghostty" = {}
+"~/.config/ghostty" = { variants = [{ os = "macos" }] }
 "~/.config/git/config" = {}
 "~/.config/git/ignore" = {}
-"~/.config/karabiner" = {}
+"~/.config/karabiner" = { variants = [{ os = "macos" }] }
 "~/.config/nvim" = {}
-"~/.config/omniwm" = {}
+"~/.config/omniwm" = { variants = [{ os = "macos" }] }
 "~/.config/starship" = {}
 "~/.config/tmux" = {}
-"~/.config/zed/settings.json" = {}
+"~/.config/zed/settings.json" = { variants = [{ os = "macos" }] }
 # "docker compose" without the hyphen: the Homebrew binary as a docker CLI plugin
-"~/.docker/cli-plugins/docker-compose" = { source = "/opt/homebrew/opt/docker-compose/bin/docker-compose" }
+# (on Linux, apt:docker-compose installs the plugin itself)
+"~/.docker/cli-plugins/docker-compose" = { source = "/opt/homebrew/opt/docker-compose/bin/docker-compose", variants = [{ os = "macos" }] }

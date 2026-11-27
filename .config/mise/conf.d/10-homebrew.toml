@@ -1,7 +1,12 @@
+# macOS only: on Linux the same tools come from mise ([tools] in 30-tools.toml)
+# and apt (15-apt.toml). Every entry here says os = "macos", or mise would
+# install it on Linux too, with its own Homebrew.
+#
 # mise installs the packages below by itself. Homebrew is only added for its
 # own commands (brew uninstall, brew services...), if it is missing.
 [bootstrap.hooks.pre-packages]
 run = '''
+[ "$(uname)" = "Darwin" ] || exit 0
 if ! command -v brew >/dev/null 2>&1 && [ ! -x /opt/homebrew/bin/brew ]; then
   sudo -v
   NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -14,6 +19,7 @@ fi
 #   Homebrew installs them with its own Ruby (NetBird, topf from PostFinance)
 [bootstrap.hooks.post-packages]
 run = '''
+[ "$(uname)" = "Darwin" ] || exit 0
 brew="$(command -v brew || echo /opt/homebrew/bin/brew)"
 "$brew" list --cask netbird-ui >/dev/null 2>&1 || "$brew" install --cask netbirdio/tap/netbird-ui
 "$brew" list --cask topf >/dev/null 2>&1 || "$brew" install --cask postfinance/tap/topf
@@ -24,47 +30,47 @@ fi
 
 [bootstrap.packages]
 # Command-line tools
-"brew:age" = "latest"
+"brew:age" = { os = "macos" }
 "brew:age-plugin-se" = { os = "macos" }
-"brew:aria2" = "latest"
-"brew:atuin" = "latest"
-"brew:carapace" = "latest"
-"brew:cilium-cli" = "latest"
-"brew:colima" = "latest"
-"brew:docker" = "latest"
-"brew:docker-compose" = "latest"
-"brew:fd" = "latest"
-"brew:fish" = "latest"
-"brew:fluxcd" = "latest"
-"brew:fzf" = "latest"
-"brew:gh" = "latest"
-"brew:ghq" = "latest"
-"brew:git" = "latest"
-"brew:helm" = "latest"
-"brew:hubble" = "latest"
-"brew:incus" = "latest"
-"brew:iperf3" = "latest"
-"brew:jq" = "latest"
-"brew:kind" = "latest"
-"brew:kubectl-cnpg" = "latest"
-"brew:kubernetes-cli" = "latest"
-"brew:mtr" = "latest"
-"brew:neovim" = "latest"
-"brew:nmap" = "latest"
+"brew:aria2" = { os = "macos" }
+"brew:atuin" = { os = "macos" }
+"brew:carapace" = { os = "macos" }
+"brew:cilium-cli" = { os = "macos" }
+"brew:colima" = { os = "macos" }
+"brew:docker" = { os = "macos" }
+"brew:docker-compose" = { os = "macos" }
+"brew:fd" = { os = "macos" }
+"brew:fish" = { os = "macos" }
+"brew:fluxcd" = { os = "macos" }
+"brew:fzf" = { os = "macos" }
+"brew:gh" = { os = "macos" }
+"brew:ghq" = { os = "macos" }
+"brew:git" = { os = "macos" }
+"brew:helm" = { os = "macos" }
+"brew:hubble" = { os = "macos" }
+"brew:incus" = { os = "macos" }
+"brew:iperf3" = { os = "macos" }
+"brew:jq" = { os = "macos" }
+"brew:kind" = { os = "macos" }
+"brew:kubectl-cnpg" = { os = "macos" }
+"brew:kubernetes-cli" = { os = "macos" }
+"brew:mtr" = { os = "macos" }
+"brew:neovim" = { os = "macos" }
+"brew:nmap" = { os = "macos" }
 "brew:pam-reattach" = { os = "macos" }
-"brew:picocom" = "latest"
-"brew:rclone" = "latest"
-"brew:restic" = "latest"
-"brew:ripgrep" = "latest"
-"brew:shellcheck" = "latest"
-"brew:sops" = "latest"
-"brew:starship" = "latest"
-"brew:talosctl" = "latest"
-"brew:tmux" = "latest"
-"brew:tree" = "latest"
-"brew:wget" = "latest"
-"brew:yq" = "latest"
-"brew:zoxide" = "latest"
+"brew:picocom" = { os = "macos" }
+"brew:rclone" = { os = "macos" }
+"brew:restic" = { os = "macos" }
+"brew:ripgrep" = { os = "macos" }
+"brew:shellcheck" = { os = "macos" }
+"brew:sops" = { os = "macos" }
+"brew:starship" = { os = "macos" }
+"brew:talosctl" = { os = "macos" }
+"brew:tmux" = { os = "macos" }
+"brew:tree" = { os = "macos" }
+"brew:wget" = { os = "macos" }
+"brew:yq" = { os = "macos" }
+"brew:zoxide" = { os = "macos" }
 # Apps (casks, macOS only)
 "brew-cask:cog-app" = { os = "macos" }
 "brew-cask:cyberduck" = { os = "macos" }

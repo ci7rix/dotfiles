@@ -1,0 +1,18 @@
+# Linux (Debian, Ubuntu): what mise cannot install, or what belongs to the system.
+# Every other command-line tool comes from mise: [tools] in 30-tools.toml.
+# mise skips these entries on macOS (no apt-get there).
+[bootstrap.packages]
+"apt:aria2" = "latest"
+"apt:curl" = "latest"
+"apt:docker-compose" = "latest"   # also the "docker compose" plugin
+"apt:docker.io" = "latest"        # Docker Engine: no Colima needed on Linux
+"apt:fish" = "latest"             # login shell: a fixed path in /etc/shells
+"apt:git" = "latest"
+"apt:incus-client" = "latest"
+"apt:iperf3" = "latest"
+"apt:libatomic1" = "latest"        # needed by node from mise
+"apt:mtr-tiny" = "latest"
+"apt:nmap" = "latest"
+"apt:picocom" = "latest"
+"apt:tree" = "latest"
+"apt:wget" = "latest"
